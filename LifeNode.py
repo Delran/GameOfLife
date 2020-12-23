@@ -3,17 +3,20 @@
 class LifeNode:
 
     #Links are clockwise starting at 0 o'clock
-    # links[0] = Up
-    # links[1] = Right
-    # links[2] = Down
-    # links[3] = Left
-
+    # links[0] = North
+    # links[1] = NorthEast
+    # links[2] = East
+    # links[3] = SouthEast
+    # links[4] = South
+    # links[5] = SouthWest
+    # links[6] = West
+    # links[7] = NorthWest
     __links = []
     __alive = False
 
     def __init__( self ):
-        #                Up    Right Down  Left
-        self.__links = [ None, None, None, None ]
+        #                N     NE    E     SE    S     SW    W     NW
+        self.__links = [ None, None, None, None, None, None, None, None ]
 
     def __assertIsNode( node ):
         if not isinstance( node, LifeNode ):
@@ -27,25 +30,55 @@ class LifeNode:
 
     def link( self, linkArray ):
         self.__assertArrayOfNode( linkArray )
-        if len(linkArray) > 4:
+        if len(linkArray) > 8:
             raise "link() : Given node link array length is greater than 4"
 
         self.__links = linkArray
 
-    
+    def isAlive( self ):
+        return self.__alive
 
-    def linkUp( self, node ):
+    #Private for now, to change in the future ?
+    def __getNeighbourAlives( self ):
+        alive = 0
+        for node in self.__links:
+            if node is not None:
+                if node.isAlive():
+                    alive += 1
+        return alive
+
+    def update( self ):
+        neighbourAlive = self.__getNeighbourAlives()
+
+
+    def linkNorth( self, node ):
         __assertIsNode( node )
         links[0] = node
 
-    def linkRight( self, node ):
+    def linkNorthEast( self, node ):
         __assertIsNode( node )
         links[1] = node
 
-    def linkDown( self, node ):
+    def linkEast( self, node ):
         __assertIsNode( node )
         links[2] = node
 
-    def linkLeft( self, node ):
+    def linkSouthEast( self, node ):
         __assertIsNode( node )
         links[3] = node
+
+    def linkSouth( self, node ):
+        __assertIsNode( node )
+        links[4] = node
+
+    def linkSouthWest( self, node ):
+        __assertIsNode( node )
+        links[5] = node
+
+    def linkWest( self, node ):
+        __assertIsNode( node )
+        links[6] = node
+
+    def linkNorthWest( self, node ):
+        __assertIsNode( node )
+        links[7] = node
