@@ -18,7 +18,7 @@ class LifeNode:
         #                N     NE    E     SE    S     SW    W     NW
         self.__links = [ None, None, None, None, None, None, None, None ]
 
-    def __assertIsNode( node ):
+    def __assertIsNode( self, node ):
         if not isinstance( node, LifeNode ):
             raise "Given data is not an instance of class LifeNode"
 
@@ -33,10 +33,20 @@ class LifeNode:
         if len(linkArray) > 8:
             raise "link() : Given node link array length is greater than 4"
 
-        self.__links = linkArray
+        for i in range( 8 ):
+            node = linkArray[i]
+            if node is not None:
+                self.__links[i] = node
+        #self.__links = linkArray
 
     def isAlive( self ):
         return self.__alive
+
+    def setAlive( self ):
+        self.__alive = True
+
+    def kill( self ):
+        self.__alive = False
 
     #Private for now, to change in the future ?
     def __getNeighbourAlives( self ):
