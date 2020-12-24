@@ -66,7 +66,7 @@ class LifeNode:
     #Any live cell with two or three live neighbours lives on to the next generation.
     #Any live cell with more than three live neighbours dies, as if by overpopulation.
     #Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
-    def setNextGen( self ):
+    def compute( self ):
         neighbourAlive = self.__getNeighbourAlives()
         if self.__alive:
             if neighbourAlive < 2 or neighbourAlive > 3:
@@ -79,6 +79,9 @@ class LifeNode:
         self.__alive = self.__nextGen
         self.__nextGen = True
 
+
+    #Using an array to link nodes, keeping individual functions
+    #just in case but are probably useless
     def linkNorth( self, node ):
         __assertIsNode( node )
         links[0] = node

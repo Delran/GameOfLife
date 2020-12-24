@@ -12,21 +12,34 @@ class LifeGameManager:
     def __init__( self, length, height ):
 
         self.createGrid( length, height )
+
+        #making a standard glidder
         self.__grid[2][1].setAlive()
         self.__grid[2][2].setAlive()
         self.__grid[2][3].setAlive()
         self.__grid[1][3].setAlive()
         self.__grid[0][2].setAlive()
 
+    #Apply lambda on each node of the grid
+    def forEachNode( self, func ):
+        for i in range( self.__height ):
+            for j in range( self.__length ):
+                func(self.__grid[i][j])
+
     def cycle( self ):
         time.sleep(0.3)
-        for i in range( self.__height ):
-            for j in range( self.__length ):
-                self.__grid[i][j].setNextGen()
 
-        for i in range( self.__height ):
-            for j in range( self.__length ):
-                self.__grid[i][j].update()
+        self.forEachNode( lambda node : node.compute() )
+        self.forEachNode( lambda node : node.update() )
+
+        #for i in range( self.__height ):
+        #    for j in range( self.__length ):
+        #        self.__grid[i][j].compute()
+
+
+        #for i in range( self.__height ):
+        #    for j in range( self.__length ):
+        #        self.__grid[i][j].update()
         self.printGrid()
 
     def createGrid( self, length, height ):
@@ -68,11 +81,11 @@ class LifeGameManager:
                             ]
                 node.link( linkArray )
 
-
+    #Todo: make a lambda that allows the use of forEachNode
     def printGrid( self ):
         for i in range( self.__height ):
             row = []
-            for j in range(self.__height):
+            for j in range( self.__height ):
                 node = self.__grid[i][j]
                 char = '0' if node.isAlive() else ' '
                 row.append( char )
@@ -82,5 +95,5 @@ class LifeGameManager:
 gameOfLife = LifeGameManager( 10, 10 )
 gameOfLife.printGrid()
 
-for i in range(100):
+for i in range(10):
     gameOfLife.cycle()
