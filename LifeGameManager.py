@@ -2,78 +2,47 @@ import time
 import os
 
 from LifeNode import LifeNode
+from LifeGameSceneLoader import LifeGameSceneLoader
 
 class LifeGameManager:
 
     __grid = []
+    __displayGrid = []
     __length = 0
     __height = 0
+    __area = 0
     __cyclePeriod = 0
 
-    def __init__( self, length, height, period = 0.3 ):
+    __sceneLoader = None
 
+    def __init__( self, length, height, sceneDir, period = 0.3 ):
+
+        self.__sceneLoader = LifeGameSceneLoader( sceneDir )
         self.createGrid( length, height )
-        self.addPulsar()
+        self.addPulsar( 2, 2 )
+        self.printGrid()
+        #self.__sceneLoader.saveScene( self.__displayGrid, "testPulsar" )
 
-    def addPulsar( self ):
-        #making a pulsar
-        #NorthWest
-        self.__grid[5][6].setAlive()
-        self.__grid[4][6].setAlive()
-        self.__grid[3][6].setAlive()
-        self.__grid[6][5].setAlive()
-        self.__grid[6][4].setAlive()
-        self.__grid[6][3].setAlive()
+    def addPulsar( self, x = 0, y = 0 ):
+        scene = self.__sceneLoader.loadScene("pulsar")
+        sceneHeight = len(scene)
+        sceneLength = len(scene[0])
 
-        self.__grid[3][1].setAlive()
-        self.__grid[4][1].setAlive()
-        self.__grid[5][1].setAlive()
-        self.__grid[1][3].setAlive()
-        self.__grid[1][4].setAlive()
-        self.__grid[1][5].setAlive()
-        #NorthEast
-        self.__grid[5][8].setAlive()
-        self.__grid[4][8].setAlive()
-        self.__grid[3][8].setAlive()
-        self.__grid[6][9].setAlive()
-        self.__grid[6][10].setAlive()
-        self.__grid[6][11].setAlive()
+        #TODO handle
+        if x * y > self.__area:
+            raise "Scene is too big for the grid dimensions"
 
-        self.__grid[3][13].setAlive()
-        self.__grid[4][13].setAlive()
-        self.__grid[5][13].setAlive()
-        self.__grid[1][9].setAlive()
-        self.__grid[1][10].setAlive()
-        self.__grid[1][11].setAlive()
-        #SouthWest
-        self.__grid[8][5].setAlive()
-        self.__grid[8][4].setAlive()
-        self.__grid[8][3].setAlive()
-        self.__grid[9][6].setAlive()
-        self.__grid[10][6].setAlive()
-        self.__grid[11][6].setAlive()
+        if x < 0 or y < 0:
+            raise "Coordinates inferior to zero"
 
-        self.__grid[13][3].setAlive()
-        self.__grid[13][4].setAlive()
-        self.__grid[13][5].setAlive()
-        self.__grid[9][1].setAlive()
-        self.__grid[10][1].setAlive()
-        self.__grid[11][1].setAlive()
-        #SouthEast
-        self.__grid[9][8].setAlive()
-        self.__grid[10][8].setAlive()
-        self.__grid[11][8].setAlive()
-        self.__grid[8][9].setAlive()
-        self.__grid[8][10].setAlive()
-        self.__grid[8][11].setAlive()
+        if self.__length - ( x + sceneLength ) < 0 or self.__height - ( y + sceneHeight ) < 0:
+            raise "Scene cannot fit at given coordinates"
 
-        self.__grid[9][13].setAlive()
-        self.__grid[10][13].setAlive()
-        self.__grid[11][13].setAlive()
-        self.__grid[13][9].setAlive()
-        self.__grid[13][10].setAlive()
-        self.__grid[13][11].setAlive()
-
+        for i in range(sceneHeight):
+            for j in range(sceneLength):
+                node = self.__grid[i+y][j+x]
+                if scene[i][j] == '0':
+                    node.setAlive()
 
 
     def addGlider( self ):
@@ -108,6 +77,8 @@ class LifeGameManager:
         #time these params should be modified
         self.__length = length
         self.__height = height
+
+        self.__area = self.__length * self.__height
 
         self.__grid = []
         for i in range( self.__height ):
@@ -149,14 +120,5 @@ class LifeGameManager:
                 node = self.__grid[i][j]
                 char = '0' if node.isAlive() else ' '
                 row.append( char )
-            print( row )
-
-
-gameOfLife = LifeGameManager( 20, 20 )
-gameOfLife.printGrid()
-try:
-    while True:
-        gameOfLife.cycle()
-except KeyboardInterrupt:
-    print("Interupted game of life")
-    pass
+            print(row)
+            self.__displayGrid.append( row )
