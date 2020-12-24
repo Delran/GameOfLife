@@ -1,3 +1,6 @@
+import time
+import os
+
 from LifeNode import LifeNode
 
 class LifeGameManager:
@@ -9,7 +12,21 @@ class LifeGameManager:
     def __init__( self, length, height ):
 
         self.createGrid( length, height )
+        self.__grid[2][1].setAlive()
         self.__grid[2][2].setAlive()
+        self.__grid[2][3].setAlive()
+        self.__grid[1][3].setAlive()
+        self.__grid[0][2].setAlive()
+
+    def cycle( self ):
+        time.sleep(0.3)
+        for i in range( self.__height ):
+            for j in range( self.__length ):
+                self.__grid[i][j].setNextGen()
+
+        for i in range( self.__height ):
+            for j in range( self.__length ):
+                self.__grid[i][j].update()
         self.printGrid()
 
     def createGrid( self, length, height ):
@@ -57,9 +74,13 @@ class LifeGameManager:
             row = []
             for j in range(self.__height):
                 node = self.__grid[i][j]
-                char = '0' if node.isAlive() else 'X'
+                char = '0' if node.isAlive() else ' '
                 row.append( char )
             print( row )
 
 
-test = LifeGameManager( 5, 5 )
+gameOfLife = LifeGameManager( 10, 10 )
+gameOfLife.printGrid()
+
+for i in range(100):
+    gameOfLife.cycle()

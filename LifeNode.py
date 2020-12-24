@@ -14,6 +14,10 @@ class LifeNode:
     __links = []
     __alive = False
 
+    #True if will be alive at next generation
+    #False otherwise
+    __nextGen = True
+
     def __init__( self ):
         #                N     NE    E     SE    S     SW    W     NW
         self.__links = [ None, None, None, None, None, None, None, None ]
@@ -57,9 +61,23 @@ class LifeNode:
                     alive += 1
         return alive
 
-    def update( self ):
-        neighbourAlive = self.__getNeighbourAlives()
 
+    #Any live cell with fewer than two live neighbours dies, as if by underpopulation.
+    #Any live cell with two or three live neighbours lives on to the next generation.
+    #Any live cell with more than three live neighbours dies, as if by overpopulation.
+    #Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+    def setNextGen( self ):
+        neighbourAlive = self.__getNeighbourAlives()
+        if self.__alive:
+            if neighbourAlive < 2 or neighbourAlive > 3:
+                self.__nextGen = False
+        else:
+            if neighbourAlive is not 3:
+                self.__nextGen = False
+
+    def update( self ):
+        self.__alive = self.__nextGen
+        self.__nextGen = True
 
     def linkNorth( self, node ):
         __assertIsNode( node )
