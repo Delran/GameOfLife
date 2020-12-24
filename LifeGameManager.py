@@ -13,13 +13,77 @@ class LifeGameManager:
     def __init__( self, length, height, period = 0.3 ):
 
         self.createGrid( length, height )
+        self.addPulsar()
 
+    def addPulsar( self ):
+        #making a pulsar
+        #NorthWest
+        self.__grid[5][6].setAlive()
+        self.__grid[4][6].setAlive()
+        self.__grid[3][6].setAlive()
+        self.__grid[6][5].setAlive()
+        self.__grid[6][4].setAlive()
+        self.__grid[6][3].setAlive()
+
+        self.__grid[3][1].setAlive()
+        self.__grid[4][1].setAlive()
+        self.__grid[5][1].setAlive()
+        self.__grid[1][3].setAlive()
+        self.__grid[1][4].setAlive()
+        self.__grid[1][5].setAlive()
+        #NorthEast
+        self.__grid[5][8].setAlive()
+        self.__grid[4][8].setAlive()
+        self.__grid[3][8].setAlive()
+        self.__grid[6][9].setAlive()
+        self.__grid[6][10].setAlive()
+        self.__grid[6][11].setAlive()
+
+        self.__grid[3][13].setAlive()
+        self.__grid[4][13].setAlive()
+        self.__grid[5][13].setAlive()
+        self.__grid[1][9].setAlive()
+        self.__grid[1][10].setAlive()
+        self.__grid[1][11].setAlive()
+        #SouthWest
+        self.__grid[8][5].setAlive()
+        self.__grid[8][4].setAlive()
+        self.__grid[8][3].setAlive()
+        self.__grid[9][6].setAlive()
+        self.__grid[10][6].setAlive()
+        self.__grid[11][6].setAlive()
+
+        self.__grid[13][3].setAlive()
+        self.__grid[13][4].setAlive()
+        self.__grid[13][5].setAlive()
+        self.__grid[9][1].setAlive()
+        self.__grid[10][1].setAlive()
+        self.__grid[11][1].setAlive()
+        #SouthEast
+        self.__grid[9][8].setAlive()
+        self.__grid[10][8].setAlive()
+        self.__grid[11][8].setAlive()
+        self.__grid[8][9].setAlive()
+        self.__grid[8][10].setAlive()
+        self.__grid[8][11].setAlive()
+
+        self.__grid[9][13].setAlive()
+        self.__grid[10][13].setAlive()
+        self.__grid[11][13].setAlive()
+        self.__grid[13][9].setAlive()
+        self.__grid[13][10].setAlive()
+        self.__grid[13][11].setAlive()
+
+
+
+    def addGlider( self ):
         #making a standard glidder
         self.__grid[2][1].setAlive()
         self.__grid[2][2].setAlive()
         self.__grid[2][3].setAlive()
         self.__grid[1][3].setAlive()
         self.__grid[0][2].setAlive()
+
 
     #Pass i and j as params to given lambda
     #for each node in the grid
@@ -88,8 +152,11 @@ class LifeGameManager:
             print( row )
 
 
-gameOfLife = LifeGameManager( 10, 10 )
+gameOfLife = LifeGameManager( 20, 20 )
 gameOfLife.printGrid()
-
-for i in range(10):
-    gameOfLife.cycle()
+try:
+    while True:
+        gameOfLife.cycle()
+except KeyboardInterrupt:
+    print("Interupted game of life")
+    pass
