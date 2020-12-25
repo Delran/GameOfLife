@@ -20,12 +20,10 @@ class LifeGameManager:
 
         self.__sceneLoader = LifeGameSceneLoader(sceneDir)
         self.createGrid(length, height)
-        self.addPulsar(2, 2)
-        self.printGrid()
+        # self.addPulsar(2, 2)
         # self.__sceneLoader.saveScene(self.__displayGrid, "testPulsar")
 
-    def addPulsar(self, x=0, y=0):
-        scene = self.__sceneLoader.loadScene("pulsar")
+    def addScene(self, scene, x, y):
         sceneHeight = len(scene)
         sceneLength = len(scene[0])
 
@@ -45,13 +43,17 @@ class LifeGameManager:
                 if scene[i][j] == '0':
                     node.setAlive()
 
-    def addGlider(self):
-        # making a standard glidder
-        self.__grid[2][1].setAlive()
-        self.__grid[2][2].setAlive()
-        self.__grid[2][3].setAlive()
-        self.__grid[1][3].setAlive()
-        self.__grid[0][2].setAlive()
+    def addPulsar(self, x=0, y=0):
+        scene = self.__sceneLoader.loadScene("pulsar")
+        self.addScene(scene, x, y)
+
+    def addGlider(self, x=0, y=0):
+        # making a standard glider
+        scene = self.__sceneLoader.loadScene("glider")
+        self.addScene(scene, x, y)
+
+    def saveScene(self, name):
+        self.__sceneLoader.saveScene(self.__displayGrid, name)
 
     # Pass i and j as params to given lambda
     # for each node in the grid
@@ -60,9 +62,21 @@ class LifeGameManager:
             for j in range(self.__length):
                 func(i, j)
 
+    # Will show n = cycles generations ( plus the initial state of the grid )
+    def start(self, cycles=0):
+        self.printGrid()
+        infinite = cycles == 0
+        try:
+            while cycles > 0 or infinite:
+                cycles -= 1
+                self.__cycle()
+        except KeyboardInterrupt:
+            print("Interupted game of life")
+            pass
+
     # Cycling, wait for a bit, compute and update every cells
     # in the game's grid
-    def cycle(self):
+    def __cycle(self):
         time.sleep(0.3)
 
         self.__forEachNode(lambda i, j: self.__grid[i][j].compute())

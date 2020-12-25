@@ -5,10 +5,8 @@ height = 20
 sceneFolder = "Scenes"
 
 gameOfLife = LifeGameManager(length, height, sceneFolder)
-# TODO : gameOfLife.start()
-try:
-    while True:
-        gameOfLife.cycle()
-except KeyboardInterrupt:
-    print("Interupted game of life")
-    pass
+
+gameOfLife.addGlider()
+gameOfLife.addPulsar(5, 5)
+
+gameOfLife.start()
