@@ -23,7 +23,8 @@ class LifeGameManager:
         # self.addPulsar(2, 2)
         # self.__sceneLoader.saveScene(self.__displayGrid, "testPulsar")
 
-    def addScene(self, scene, x, y):
+    def addScene(self, name, x, y):
+        scene = self.__sceneLoader.loadScene(name)
         sceneHeight = len(scene)
         sceneLength = len(scene[0])
 
@@ -44,13 +45,11 @@ class LifeGameManager:
                     node.setAlive()
 
     def addPulsar(self, x=0, y=0):
-        scene = self.__sceneLoader.loadScene("pulsar")
-        self.addScene(scene, x, y)
+        self.addScene("pulsar", x, y)
 
     def addGlider(self, x=0, y=0):
         # making a standard glider
-        scene = self.__sceneLoader.loadScene("glider")
-        self.addScene(scene, x, y)
+        self.addScene("glider", x, y)
 
     def saveScene(self, name):
         self.__sceneLoader.saveScene(self.__displayGrid, name)
@@ -65,6 +64,7 @@ class LifeGameManager:
     # Will show n = cycles generations ( plus the initial state of the grid )
     def start(self, cycles=0):
         self.printGrid()
+        input("Press enter to continue")
         infinite = cycles == 0
         try:
             while cycles > 0 or infinite:

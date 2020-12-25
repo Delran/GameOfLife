@@ -7,5 +7,6 @@ Features :
         Any scene can be loaded in the Game's grid at chosen coordinates.
         Added scene will override any cell with a different state.
         Simple patterns such as a glider and a pulsar are stored as scene
+        WARNING : A scene MUST BE a rectangle
 
 Limitations :
