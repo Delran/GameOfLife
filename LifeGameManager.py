@@ -1,11 +1,13 @@
 import time
-import os
 
 from LifeNode import LifeNode
 from LifeGameSceneLoader import LifeGameSceneLoader
 
 
 class LifeGameManager:
+
+    ALIVECHAR = '0'
+    DEADCHAR = ' '
 
     __grid = []
     __displayGrid = []
@@ -41,7 +43,7 @@ class LifeGameManager:
         for i in range(sceneHeight):
             for j in range(sceneLength):
                 node = self.__grid[i+y][j+x]
-                if scene[i][j] == '0':
+                if scene[i][j] == ALIVECHAR:
                     node.setAlive()
 
     def addPulsar(self, x=0, y=0):
@@ -132,7 +134,7 @@ class LifeGameManager:
             row = []
             for j in range(self.__height):
                 node = self.__grid[i][j]
-                char = '0' if node.isAlive() else ' '
+                char = ALIVECHAR if node.isAlive() else DEADCHAR
                 row.append(char)
             print(row)
             self.__displayGrid.append(row)
