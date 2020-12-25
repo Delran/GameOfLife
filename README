@@ -1,0 +1,11 @@
+This is a ( for now ) console based implementation of the Game Of Life written in Python
+
+Features :
+
+    Scene loader/saver :
+        The current scene can be saved in a easily editable CSV file.
+        Any scene can be loaded in the Game's grid at chosen coordinates.
+        Added scene will override any cell with a different state.
+        Simple patterns such as a glider and a pulsar are stored as scene
+
+Limitations :

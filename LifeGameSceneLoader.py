@@ -2,36 +2,37 @@ import os.path
 from os import path
 import csv
 
+
 class LifeGameSceneLoader:
 
     __sceneFolderPath = ""
     __scenes = []
 
-    def __init__( self, _path ):
-        if not path.isdir( _path ):
+    def __init__(self, _path):
+        if not path.isdir(_path):
             raise "Cannot find specified folder for scenes path"
 
         if _path[-1] != '/':
             _path += '/'
         self.__sceneFolderPath = _path
-        self.__scenes = os.listdir( self.__sceneFolderPath )
+        self.__scenes = os.listdir(self.__sceneFolderPath)
 
-    def __getFullPath( self, name ):
+    def __getFullPath(self, name):
         return self.__sceneFolderPath + name
 
-    def loadScene( self, name ):
+    def loadScene(self, name):
         if name not in self.__scenes:
             raise "No scene of given name : {}".format(name)
         scene = []
-        with open( self.__getFullPath( name ), encoding='UTF-8' ) as csvfile:
-            sceneReader = csv.reader( csvfile, quotechar='"' )
+        with open(self.__getFullPath(name), encoding='UTF-8') as csvfile:
+            sceneReader = csv.reader(csvfile, quotechar='"')
             for row in sceneReader:
                 scene.append(row)
         return scene
 
-    def saveScene( self, grid, sceneName ):
+    def saveScene(self, grid, sceneName):
 
-        with open( self.__getFullPath( sceneName ), 'w', newline='' ) as csvfile:
+        with open(self.__getFullPath(sceneName), 'w', newline='') as csvfile:
             sceneWriter = csv.writer(csvfile, quotechar='"', quoting=csv.QUOTE_ALL)
-            for i in range( len( grid ) ):
-                sceneWriter.writerow( grid[i] )
+            for i in range(len(grid)):
+                sceneWriter.writerow(grid[i])
