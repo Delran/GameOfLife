@@ -43,7 +43,7 @@ class LifeGameManager:
         for i in range(sceneHeight):
             for j in range(sceneLength):
                 node = self.__grid[i+y][j+x]
-                if scene[i][j] == ALIVECHAR:
+                if scene[i][j] == self.ALIVECHAR:
                     node.setAlive()
 
     def addPulsar(self, x=0, y=0):
@@ -118,23 +118,15 @@ class LifeGameManager:
                         self.__grid[(i-1) % self.__height][(j-1) % self.__length],  # NorthWest
                     ])
         self.__forEachNode(linkLambda)
-        # print("Acceccing node[{}][{}]".format(i-1 % self.__height, j   % self.__length))
-        # print("Acceccing node[{}][{}]".format(i-1 % self.__height, j+1 % self.__length))
-        # print("Acceccing node[{}][{}]".format(i   % self.__height, j+1 % self.__length))
-        # print("Acceccing node[{}][{}]".format(i+1 % self.__height, j+1 % self.__length))
-        # print("Acceccing node[{}][{}]".format(i+1 % self.__height, j   % self.__length))
-        # print("Acceccing node[{}][{}]".format(i+1 % self.__height, j-1 % self.__length))
-        # print("Acceccing node[{}][{}]".format(i   % self.__height, j-1 % self.__length))
-        # print("Acceccing node[{}][{}]".format(i-1 % self.__height, j-1 % self.__length))
 
     # Todo: make a lambda that allows the use of __forEachNode
     def printGrid(self):
-        # testLambda = lambda i, j : self.__grid[i][j].print()
+        # testLambda = lambda i, j: self.__grid[i][j].print()
         for i in range(self.__height):
             row = []
             for j in range(self.__height):
                 node = self.__grid[i][j]
-                char = ALIVECHAR if node.isAlive() else DEADCHAR
+                char = self.ALIVECHAR if node.isAlive() else self.DEADCHAR
                 row.append(char)
             print(row)
             self.__displayGrid.append(row)
