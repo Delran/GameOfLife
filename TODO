@@ -1,0 +1,12 @@
+GUI :
+  Edit mode:
+    Edit scene with keyboard
+    Edit scene with mouse
+    Save and load scene into the grid
+
+Game of Life:
+  Show number of generations
+
+Bugs:
+  Curses will raise exceptions when trying to create a window
+  out of range of the terminal, catch error and fix the crash

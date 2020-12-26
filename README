@@ -1,9 +1,9 @@
-This is a ( for now ) console based implementation of the Game Of Life written in Python
+
+Console based implementation of Conway's Game of life using Python and Curses.
 
 Features :
 
     Scene loader/saver :
-        The current scene can be saved in a easily editable CSV file.
         Any scene can be loaded in the Game's grid at chosen coordinates.
         Added scene will override any cell with a different state.
         Simple patterns such as a glider and a pulsar are stored as scene
@@ -12,4 +12,4 @@ Features :
 
 Future :
 
-    Working on a curses implementation for console graphics
+    Edit mode
