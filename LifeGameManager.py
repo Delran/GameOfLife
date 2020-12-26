@@ -53,9 +53,12 @@ class LifeGameManager:
     def addPulsar(self, x=0, y=0):
         self.addScene("pulsar", x, y)
 
+    def addBlock(self, x=0, y=0):
+        self.addScene("block", x, y)
+
     def addGliderGun(self, x=0, y=0):
         scene = self.__sceneLoader.loadScene("glidergun")
-        scene = self.__sceneLoader.rotateSceneCounterClockwise(scene)
+        #scene = self.__sceneLoader.rotateSceneCounterClockwise(scene)
         self.addScene(scene, x, y)
 
     def addGlider(self, x=0, y=0):

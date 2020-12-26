@@ -6,10 +6,15 @@ Features :
     Scene loader/saver :
         Any scene can be loaded in the Game's grid at chosen coordinates.
         Added scene will override any cell with a different state.
-        Simple patterns such as a glider and a pulsar are stored as scene
+        Simple patterns such as a glider and a pulsar can b stored as scenes.
         WARNING : A scene MUST BE a rectangle
 
+Limitations :
+
+    The game's greed cannot realistically be higher than around 50 cells high.
+    Console graphics cannot produce a cell smaller than an ascii char.
 
 Future :
 
     Edit mode
+    Integration on a different graphics framework

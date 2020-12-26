@@ -27,37 +27,35 @@ class LifeGameSceneLoader:
                 scene.append(row)
         return scene
 
-    def rotateScene(self, scene, rLength, rHeight):
+    # Grids can easily be rotated and mirrored using
+    # the same loop with inverted range
+    # for range x: for reversed y    === 90° rotation clockwise
+    # for reversed x: for range y    === 90° rotation counter clockwise
+    # for reversed x: for reversed y === 180° rotation
+    def rotateScene(self, scene, rangeX, rangeY):
         rotatedScene = []
-        for x in rLength:
+        for x in rangeX:
             row = []
-            for y in rHeight:
+            for y in rangeY:
                 row.append(scene[y][x])
             rotatedScene.append(row)
         return rotatedScene
 
     def rotateSceneClockwise(self, scene):
-        # return self.rotateScene(scene, range(len(scene[0])), reversed(range(len(scene))))
-        rotatedScene = []
-        for x in range(len(scene[0])):
-            row = []
-            for y in reversed(range(len(scene))):
-                row.append(scene[y][x])
-            rotatedScene.append(row)
-        return rotatedScene
+        rangeX = range(len(scene[0]))
+        # Using reversed(range()) as argument fo Y/Height
+        # seems to be caused unexpected behavior
+        # Using manually inverted range that print the same
+        # result doesn't appear to have this problem
+        rangeY = range(len(scene)-1, -1, -1)
+        return self.rotateScene(scene, rangeX, rangeY)
 
     def rotateSceneCounterClockwise(self, scene):
-        return self.rotateScene(scene, reversed(range(len(scene[0]))), range(len(scene)))
-        # rotatedScene = []
-        # for x in reversed(range(len(scene[0]))):
-        #     row = []
-        #     for y in range(len(scene)):
-        #         row.append(scene[y][x])
-        #     rotatedScene.append(row)
-        # return rotatedScene
+        rangeX = reversed(range(len(scene[0])))
+        rangeY = range(len(scene))
+        return self.rotateScene(scene, rangeX, rangeY)
 
     def saveScene(self, grid, sceneName):
-
         with open(self.__getFullPath(sceneName), 'w', newline='') as csvfile:
             sceneWriter = csv.writer(csvfile, quoting=csv.QUOTE_NONE)
             for i in range(len(grid)):

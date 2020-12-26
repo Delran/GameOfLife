@@ -13,7 +13,7 @@ def main():
     # gameOfLife.addGlider(15, 15)
     # gameOfLife.addScene("blinker", 25, 25)
     # gameOfLife.addScene("bigblinker", 25, 25)
-    # gameOfLife.addScene("block", 25, 25)
+    # gameOfLife.addBlock(25, 25)
     # gameOfLife.addScene("single", 5, 6)
     # gameOfLife.addScene("single", 5, 5)
     # gameOfLife.addScene("single", 6, 5)
