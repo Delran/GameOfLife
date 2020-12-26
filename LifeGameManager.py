@@ -7,7 +7,7 @@ from LifeGameSceneLoader import LifeGameSceneLoader
 class LifeGameManager:
 
     ALIVECHAR = '0'
-    DEADCHAR = ' '
+    DEADCHAR = '-'
 
     __grid = []
     __displayGrid = []
