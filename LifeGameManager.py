@@ -1,5 +1,4 @@
 import time
-import curses
 from curses import wrapper
 
 from LifeNode import LifeNode

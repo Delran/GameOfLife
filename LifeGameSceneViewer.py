@@ -1,5 +1,4 @@
 import curses
-from curses.textpad import Textbox, rectangle
 
 
 class LifeGameSceneViewer:
@@ -38,7 +37,6 @@ class LifeGameSceneViewer:
         self.__screen.addstr(strBeginY, strBeginX, str, curses.A_BOLD)
         self.__screen.getch()
 
-
     def update(self):
         # Clear the view
         self.__screen.clear()
@@ -69,7 +67,7 @@ class LifeGameSceneViewer:
                 # Column are small so we use two char by unit of length
                 for i in range(2):
                     win.insch(y, 0, ' ', color | curses.A_BOLD)
-        
+
         #self.__screen.addstr(0, 0, "UHDKUHQKUZD")
         #event = self.__screen.getch()
         #if event == curses.KEY_MOUSE:

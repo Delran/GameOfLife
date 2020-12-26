@@ -1,11 +1,7 @@
-import curses
-from curses.textpad import Textbox, rectangle
-from curses import wrapper
-
 from LifeGameManager import LifeGameManager
 
 
-def main(stdscr):
+def main():
 
     length = 50
     height = 50
@@ -31,4 +27,5 @@ def main(stdscr):
 
     gameOfLife.start()
 
-wrapper(main)
+
+main()
