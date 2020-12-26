@@ -68,15 +68,6 @@ class LifeGameSceneViewer:
                 for i in range(2):
                     win.insch(y, 0, ' ', color | curses.A_BOLD)
 
-        #self.__screen.addstr(0, 0, "UHDKUHQKUZD")
-        #event = self.__screen.getch()
-        #if event == curses.KEY_MOUSE:
-        #    win.addstr(10, 0, "UHDKUHQKUZD")
-        #if event == ord("q"):
-        #    win.addstr(10, 0, "UHDKUHQKUZD")
-        #if event == ord("a"):
-        #    win.addstr(10, 0, "")
-
         self.__screen.noutrefresh()
         win.noutrefresh()
 

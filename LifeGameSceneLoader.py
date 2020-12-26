@@ -3,6 +3,8 @@ from os import path
 import csv
 
 
+# TODO: A Scene class must be created to handle
+# scenes individually
 class LifeGameSceneLoader:
 
     __sceneFolderPath = ""
@@ -27,6 +29,7 @@ class LifeGameSceneLoader:
                 scene.append(row)
         return scene
 
+    # TODO: following functions should be moved to a Scene class
     # Grids can easily be rotated and mirrored using
     # the same loop with inverted range
     # for range x: for reversed y    === 90° rotation clockwise
@@ -54,6 +57,25 @@ class LifeGameSceneLoader:
         rangeX = reversed(range(len(scene[0])))
         rangeY = range(len(scene))
         return self.rotateScene(scene, rangeX, rangeY)
+
+    def flipScene(self, scene, rangeX, rangeY):
+        flipedScene = []
+        for y in rangeY:
+            row = []
+            for x in rangeX:
+                row.append(scene[y][x])
+            flipedScene.append(row)
+        return flipedScene
+
+    def flipHorizontal(self, scene):
+        rangeX = range(len(scene[0])-1, -1, -1)
+        rangeY = range(len(scene))
+        return self.flipScene(scene, rangeX, rangeY)
+
+    def flipVertical(self, scene):
+        rangeX = range(len(scene[0]))
+        rangeY = range(len(scene)-1, -1, -1)
+        return self.flipScene(scene, rangeX, rangeY)
 
     def saveScene(self, grid, sceneName):
         with open(self.__getFullPath(sceneName), 'w', newline='') as csvfile:

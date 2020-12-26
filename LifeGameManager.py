@@ -58,7 +58,8 @@ class LifeGameManager:
 
     def addGliderGun(self, x=0, y=0):
         scene = self.__sceneLoader.loadScene("glidergun")
-        #scene = self.__sceneLoader.rotateSceneCounterClockwise(scene)
+        # scene = self.__sceneLoader.flipVertical(scene)
+        # scene = self.__sceneLoader.flipHorizontal(scene)
         self.addScene(scene, x, y)
 
     def addGlider(self, x=0, y=0):
@@ -100,7 +101,6 @@ class LifeGameManager:
 
         self.__forEachNode(lambda i, j: self.__grid[i][j].compute())
         self.__forEachNode(lambda i, j: self.__grid[i][j].update())
-        #self.printGrid()
 
     def createGrid(self, length, height):
 
