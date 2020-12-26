@@ -66,26 +66,20 @@ class LifeGameManager:
             for j in range(self.__length):
                 func(i, j)
 
-    # Will show n = cycles generations ( plus the initial state of the grid )
-    def start(self, cycles=0):
+    # Only encapsulate curses wrapper
+    def start(self):
         wrapper(self.__loop)
-        # main loop here
-        # self.printGrid()
-        # input("Press enter to continue")
-        # infinite = cycles == 0
-        # try:
-        #     while cycles > 0 or infinite:
-        #         cycles -= 1
-        #         self.__cycle()
-        # except KeyboardInterrupt:
-        #     print("Interupted game of life")
-        #     pass
 
     def __loop(self, screen):
+        # Init scene view, will show the initial state of the grid
         self.__sceneView = LifeGameSceneViewer(screen, self.__grid)
+        # Wait for user input to start
+        self.__sceneView.showStartMessage()
         try:
             while True:
+                # Cycle and update the logical grid
                 self.__cycle()
+                # Update the view
                 self.__sceneView.update()
         except KeyboardInterrupt:
             pass

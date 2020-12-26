@@ -17,9 +17,6 @@ class LifeGameSceneLoader:
         self.__sceneFolderPath = _path
         self.__scenes = os.listdir(self.__sceneFolderPath)
 
-    def __getFullPath(self, name):
-        return self.__sceneFolderPath + name
-
     def loadScene(self, name):
         if name not in self.__scenes:
             raise "No scene of given name : {}".format(name)
@@ -36,3 +33,6 @@ class LifeGameSceneLoader:
             sceneWriter = csv.writer(csvfile, quotechar='"', quoting=csv.QUOTE_ALL)
             for i in range(len(grid)):
                 sceneWriter.writerow(grid[i])
+
+    def __getFullPath(self, name):
+        return self.__sceneFolderPath + name
