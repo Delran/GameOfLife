@@ -1,7 +1,10 @@
 import time
+import curses
+from curses import wrapper
 
 from LifeNode import LifeNode
 from LifeGameSceneLoader import LifeGameSceneLoader
+from LifeGameSceneViewer import LifeGameSceneViewer
 
 
 class LifeGameManager:
@@ -17,6 +20,7 @@ class LifeGameManager:
     __cyclePeriod = 0
 
     __sceneLoader = None
+    __sceneView = None
 
     def __init__(self, length, height, sceneDir, period=0.3):
 
@@ -30,7 +34,6 @@ class LifeGameManager:
         sceneHeight = len(scene)
         sceneLength = len(scene[0])
 
-        # TODO handle
         if x * y > self.__area:
             raise "Scene is too big for the grid dimensions"
 
@@ -65,15 +68,26 @@ class LifeGameManager:
 
     # Will show n = cycles generations ( plus the initial state of the grid )
     def start(self, cycles=0):
-        self.printGrid()
-        input("Press enter to continue")
-        infinite = cycles == 0
+        wrapper(self.__loop)
+        # main loop here
+        # self.printGrid()
+        # input("Press enter to continue")
+        # infinite = cycles == 0
+        # try:
+        #     while cycles > 0 or infinite:
+        #         cycles -= 1
+        #         self.__cycle()
+        # except KeyboardInterrupt:
+        #     print("Interupted game of life")
+        #     pass
+
+    def __loop(self, screen):
+        self.__sceneView = LifeGameSceneViewer(screen, self.__grid)
         try:
-            while cycles > 0 or infinite:
-                cycles -= 1
+            while True:
                 self.__cycle()
+                self.__sceneView.update()
         except KeyboardInterrupt:
-            print("Interupted game of life")
             pass
 
     # Cycling, wait for a bit, compute and update every cells
@@ -83,7 +97,7 @@ class LifeGameManager:
 
         self.__forEachNode(lambda i, j: self.__grid[i][j].compute())
         self.__forEachNode(lambda i, j: self.__grid[i][j].update())
-        self.printGrid()
+        #self.printGrid()
 
     def createGrid(self, length, height):
 
