@@ -6,6 +6,7 @@ GUI :
 
 Game of Life:
   Show number of generations
+  Change orientation of scenes
 
 Bugs:
   Curses will raise exceptions when trying to create a window

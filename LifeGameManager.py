@@ -25,11 +25,13 @@ class LifeGameManager:
 
         self.__sceneLoader = LifeGameSceneLoader(sceneDir)
         self.createGrid(length, height)
-        # self.addPulsar(2, 2)
         # self.__sceneLoader.saveScene(self.__displayGrid, "testPulsar")
 
-    def addScene(self, name, x, y):
-        scene = self.__sceneLoader.loadScene(name)
+    def addScene(self, scene, x=0, y=0):
+
+        if isinstance(scene, str):
+            scene = self.__sceneLoader.loadScene(scene)
+
         sceneHeight = len(scene)
         sceneLength = len(scene[0])
 
@@ -50,6 +52,11 @@ class LifeGameManager:
 
     def addPulsar(self, x=0, y=0):
         self.addScene("pulsar", x, y)
+
+    def addGliderGun(self, x=0, y=0):
+        scene = self.__sceneLoader.loadScene("glidergun")
+        scene = self.__sceneLoader.rotateSceneCounterClockwise(scene)
+        self.addScene(scene, x, y)
 
     def addGlider(self, x=0, y=0):
         # making a standard glider
@@ -86,7 +93,7 @@ class LifeGameManager:
     # Cycling, wait for a bit, compute and update every cells
     # in the game's grid
     def __cycle(self):
-        time.sleep(0.3)
+        time.sleep(0.2)
 
         self.__forEachNode(lambda i, j: self.__grid[i][j].compute())
         self.__forEachNode(lambda i, j: self.__grid[i][j].update())

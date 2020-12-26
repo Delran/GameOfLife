@@ -27,6 +27,35 @@ class LifeGameSceneLoader:
                 scene.append(row)
         return scene
 
+    def rotateScene(self, scene, rLength, rHeight):
+        rotatedScene = []
+        for x in rLength:
+            row = []
+            for y in rHeight:
+                row.append(scene[y][x])
+            rotatedScene.append(row)
+        return rotatedScene
+
+    def rotateSceneClockwise(self, scene):
+        # return self.rotateScene(scene, range(len(scene[0])), reversed(range(len(scene))))
+        rotatedScene = []
+        for x in range(len(scene[0])):
+            row = []
+            for y in reversed(range(len(scene))):
+                row.append(scene[y][x])
+            rotatedScene.append(row)
+        return rotatedScene
+
+    def rotateSceneCounterClockwise(self, scene):
+        return self.rotateScene(scene, reversed(range(len(scene[0]))), range(len(scene)))
+        # rotatedScene = []
+        # for x in reversed(range(len(scene[0]))):
+        #     row = []
+        #     for y in range(len(scene)):
+        #         row.append(scene[y][x])
+        #     rotatedScene.append(row)
+        # return rotatedScene
+
     def saveScene(self, grid, sceneName):
 
         with open(self.__getFullPath(sceneName), 'w', newline='') as csvfile:
