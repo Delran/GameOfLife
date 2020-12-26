@@ -11,8 +11,8 @@ def main(stdscr):
     curses.mousemask(1)
     stdscr.keypad(1)
 
-    length = 20
-    height = 20
+    length = 50
+    height = 50
     sceneFolder = "Scenes"
 
     gameOfLife = LifeGameManager(length, height, sceneFolder)
@@ -26,7 +26,7 @@ def main(stdscr):
     # gameOfLife.addScene("column4", 10, 10)
     # gameOfLife.addScene("column4", 13, 10)
     # gameOfLife.addPulsar(2, 2)
-    gameOfLife.addPulsar(5, 5)
+    gameOfLife.addPulsar(25, 25)
 
     gameOfLife.start()
 
