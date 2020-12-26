@@ -22,7 +22,7 @@ class LifeGameSceneLoader:
             raise "No scene of given name : {}".format(name)
         scene = []
         with open(self.__getFullPath(name), encoding='UTF-8') as csvfile:
-            sceneReader = csv.reader(csvfile, quotechar='"')
+            sceneReader = csv.reader(csvfile)
             for row in sceneReader:
                 scene.append(row)
         return scene
@@ -30,7 +30,7 @@ class LifeGameSceneLoader:
     def saveScene(self, grid, sceneName):
 
         with open(self.__getFullPath(sceneName), 'w', newline='') as csvfile:
-            sceneWriter = csv.writer(csvfile, quotechar='"', quoting=csv.QUOTE_ALL)
+            sceneWriter = csv.writer(csvfile, quoting=csv.QUOTE_NONE)
             for i in range(len(grid)):
                 sceneWriter.writerow(grid[i])
 
