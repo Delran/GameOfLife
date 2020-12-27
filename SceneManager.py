@@ -2,13 +2,17 @@ import os.path
 from os import path
 import csv
 
+from PatternFileManager import PatternFileManager
+
 
 # TODO: A Scene class must be created to handle
 # scenes individually
-class LifeGameSceneLoader:
+class SceneManager:
 
     __sceneFolderPath = ""
     __scenes = []
+
+    __patternFileManager = None
 
     def __init__(self, _path):
         if not path.isdir(_path):
@@ -17,6 +21,7 @@ class LifeGameSceneLoader:
         if _path[-1] != '/':
             _path += '/'
         self.__sceneFolderPath = _path
+        self.__patternFileManager = PatternFileManager(self.__sceneFolderPath)
         self.__scenes = os.listdir(self.__sceneFolderPath)
 
     def loadScene(self, name):

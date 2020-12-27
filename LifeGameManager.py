@@ -2,7 +2,7 @@ import time
 from curses import wrapper
 
 from LifeNode import LifeNode
-from LifeGameSceneLoader import LifeGameSceneLoader
+from SceneManager import SceneManager
 from LifeGameSceneViewer import LifeGameSceneViewer
 
 
@@ -18,19 +18,19 @@ class LifeGameManager:
     __area = 0
     __cyclePeriod = 0
 
-    __sceneLoader = None
+    __sceneManager = None
     __sceneView = None
 
     def __init__(self, length, height, sceneDir, period=0.3):
 
-        self.__sceneLoader = LifeGameSceneLoader(sceneDir)
+        self.__sceneManager = SceneManager(sceneDir)
         self.createGrid(length, height)
-        # self.__sceneLoader.saveScene(self.__displayGrid, "testPulsar")
+        # self.__sceneManager.saveScene(self.__displayGrid, "testPulsar")
 
     def addScene(self, scene, x=0, y=0):
 
         if isinstance(scene, str):
-            scene = self.__sceneLoader.loadScene(scene)
+            scene = self.__sceneManager.loadScene(scene)
 
         sceneHeight = len(scene)
         sceneLength = len(scene[0])
@@ -57,9 +57,9 @@ class LifeGameManager:
         self.addScene("block", x, y)
 
     def addGliderGun(self, x=0, y=0):
-        scene = self.__sceneLoader.loadScene("glidergun")
-        # scene = self.__sceneLoader.flipVertical(scene)
-        # scene = self.__sceneLoader.flipHorizontal(scene)
+        scene = self.__sceneManager.loadScene("glidergun")
+        # scene = self.__sceneManager.flipVertical(scene)
+        # scene = self.__sceneManager.flipHorizontal(scene)
         self.addScene(scene, x, y)
 
     def addGlider(self, x=0, y=0):
@@ -67,7 +67,7 @@ class LifeGameManager:
         self.addScene("glider", x, y)
 
     def saveScene(self, name):
-        self.__sceneLoader.saveScene(self.__displayGrid, name)
+        self.__sceneManager.saveScene(self.__displayGrid, name)
 
     # Pass i and j as params to given lambda
     # for each node in the grid
