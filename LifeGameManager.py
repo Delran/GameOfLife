@@ -1,4 +1,8 @@
 import time
+import threading
+import queue
+
+import curses
 from curses import wrapper
 
 from LifeNode import LifeNode
@@ -19,6 +23,8 @@ class LifeGameManager:
 
     __sceneManager = None
     __sceneView = None
+
+    __play = True
 
     def __init__(self, length, height, sceneDir, period=0.3):
 
@@ -77,21 +83,27 @@ class LifeGameManager:
 
     # Only encapsulate curses wrapper
     def start(self):
-        wrapper(self.__loop)
+        wrapper(self.__gameLoop)
 
-    def __loop(self, screen):
+    def __loopWorker(self):
+        while self.__play:
+            # Cycle and update the logical grid
+            self.__cycle()
+            # Update the view
+            self.__sceneView.update()
+
+    def __gameLoop(self, screen):
         # Init scene view, will show the initial state of the grid
         self.__sceneView = LifeGameSceneViewer(screen, self.__grid)
         # Wait for user input to start
         self.__sceneView.showStartMessage()
-        try:
-            while True:
-                # Cycle and update the logical grid
-                self.__cycle()
-                # Update the view
-                self.__sceneView.update()
-        except KeyboardInterrupt:
-            pass
+
+        t = threading.Thread(target=self.__loopWorker)
+        t.start()
+        self.__sceneView.gameGUI()
+        self.__play = False
+        t.join()
+
 
     # Cycling, wait for a bit, compute and update every cells
     # in the game's grid

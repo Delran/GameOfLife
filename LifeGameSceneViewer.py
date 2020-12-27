@@ -37,6 +37,15 @@ class LifeGameSceneViewer:
         self.__screen.addstr(strBeginY, strBeginX, str, curses.A_BOLD)
         self.__screen.getch()
 
+    def gameGUI(self):
+        str = "Press space to pause, esc to quit"
+        input = ''
+        while input != 27:
+            strBeginX = int(self.__cols/2 - len(str)/2) + 1
+            strBeginY = self.__beginY + self.__gridHeight + 2
+            self.__screen.addstr(strBeginY, strBeginX, str, curses.A_BOLD)
+            input = self.__screen.getch()
+
     def update(self):
         # Clear the view
         self.__screen.clear()
