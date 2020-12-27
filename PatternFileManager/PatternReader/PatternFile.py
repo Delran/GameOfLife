@@ -10,9 +10,10 @@ class PatternFile:
     __DEAD_CHAR = None
 
     __path = None
+    __name = ""
 
-    def __init(self, path):
-        self.__path = path
+    def __init__(self, _path):
+        self.__path = _path
 
     @abstractmethod
     def read(self):

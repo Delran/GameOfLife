@@ -2,7 +2,7 @@ import os.path
 from os import path
 import csv
 
-from PatternFileManager import PatternFileManager
+from PatternFileManager.PatternFileManager import PatternFileManager
 
 
 # TODO: A Scene class must be created to handle
@@ -12,7 +12,7 @@ class SceneManager:
     __sceneFolderPath = ""
     __scenes = []
 
-    __patternFileManager = None
+    __patternManager = None
 
     def __init__(self, _path):
         if not path.isdir(_path):
@@ -21,7 +21,7 @@ class SceneManager:
         if _path[-1] != '/':
             _path += '/'
         self.__sceneFolderPath = _path
-        self.__patternFileManager = PatternFileManager(self.__sceneFolderPath)
+        self.__patternManager = PatternFileManager(self.__sceneFolderPath)
         self.__scenes = os.listdir(self.__sceneFolderPath)
 
     def loadScene(self, name):
