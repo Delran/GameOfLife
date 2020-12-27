@@ -20,8 +20,7 @@ class PatternFileManager:
         # recursively get all files with handled extensions
         self.__exploreDir(_path)
 
-    # Recursive function to explore all dirs inside given
-    # as first parameter
+    # Recursive function to explore all dirs at given path
     def __exploreDir(self, _path):
         files = os.listdir(_path)
         for file in files:
@@ -45,9 +44,3 @@ class PatternFileManager:
                 else:
                     continue
                 self.__patternFiles.append(reader)
-
-    # @staticmethod
-    # def readPatternFile(self, path):
-
-    # @staticmethod
-    # def readPatternFile(self, path):

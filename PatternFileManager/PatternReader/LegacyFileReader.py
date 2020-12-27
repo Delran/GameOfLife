@@ -9,7 +9,6 @@ class LegacyFileReader(PatternFile):
 
     def __init__(self, _path, _id):
         super(LegacyFileReader, self).__init__(_path, _id, defs.ALIVECHAR, defs.DEADCHAR)
-        self.read()
 
     def read(self):
         if self.pattern is None:

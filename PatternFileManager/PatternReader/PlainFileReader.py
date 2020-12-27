@@ -7,8 +7,8 @@ class PlainFileReader(PatternFile):
 
     def __init__(self, _path, _id):
         super(PlainFileReader, self).__init__(_path, _id, 'O', '.')
-        self.read()
 
+    # TODO: only read once, change function name ?
     def read(self):
         if self.pattern is None:
             self.pattern = []
@@ -30,12 +30,12 @@ class PlainFileReader(PatternFile):
                             else:
                                 break
                         self.pattern.append(row)
+                patternFile.close()
 
                 # Iterating through the result grid and adding
                 # dead cells to have the same length on each row
                 for row in self.pattern:
                     for i in range(len(row), maxLength-1):
                         row.append(defs.DEADCHAR)
-                    print(row)
 
-                patternFile.close()
+        return self.pattern
