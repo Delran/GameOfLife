@@ -9,8 +9,8 @@ def main():
 
     gameOfLife = LifeGameManager(length, height, sceneFolder)
 
-    gameOfLife.addGliderGun()
-    # gameOfLife.addGlider(15, 15)
+    # gameOfLife.addGliderGun()
+    gameOfLife.addGlider(15, 15)
     # gameOfLife.addScene("blinker", 25, 25)
     # gameOfLife.addScene("bigblinker", 25, 25)
     # gameOfLife.addBlock(25, 25)
@@ -25,7 +25,7 @@ def main():
     # gameOfLife.addScene("column4", 25, 25)
     # gameOfLife.addScene("column4", 13, 10)
     # gameOfLife.addPulsar(2, 2)
-    # gameOfLife.addPulsar(25, 25)
+    gameOfLife.addPulsar(25, 25)
 
     gameOfLife.start()
 

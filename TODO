@@ -1,4 +1,6 @@
 GUI :
+  Update GUI to PyQt
+
   Edit mode:
     Edit scene with keyboard
     Edit scene with mouse
@@ -6,7 +8,6 @@ GUI :
 
 Game of Life:
   Show number of generations
-  Change orientation of scenes
 
 Scene:
   A scene should be a class of its own

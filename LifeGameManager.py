@@ -19,7 +19,7 @@ class LifeGameManager:
     __length = 0
     __height = 0
     __area = 0
-    __cyclePeriod = 0
+    __cyclePeriod = 0.2
 
     __sceneManager = None
     __sceneView = None
@@ -76,21 +76,16 @@ class LifeGameManager:
 
     # Pass i and j as params to given lambda
     # for each node in the grid
-    def __forEachNode(self, func):
+    def __forEachNode(self, fnLambda):
         for i in range(self.__height):
             for j in range(self.__length):
-                func(i, j)
+                fnLambda(i, j)
 
-    # Only encapsulate curses wrapper
+    # Start the curses wrapper
+    # This wrap the curses scene to avoid
+    # bleeding on the terminal once terminated
     def start(self):
         wrapper(self.__gameLoop)
-
-    def __loopWorker(self):
-        while self.__play:
-            # Cycle and update the logical grid
-            self.__cycle()
-            # Update the view
-            self.__sceneView.update()
 
     def __gameLoop(self, screen):
         # Init scene view, will show the initial state of the grid
@@ -104,6 +99,15 @@ class LifeGameManager:
         self.__play = False
         t.join()
 
+    # Shitty thread worker to bypass the lack
+    # of keyboard event to detect input during play
+    # This is horrible and should be changed ASAP
+    def __loopWorker(self):
+        while self.__play:
+            # Cycle and update the logical grid
+            self.__cycle()
+            # Update the view
+            self.__sceneView.update()
 
     # Cycling, wait for a bit, compute and update every cells
     # in the game's grid

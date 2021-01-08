@@ -39,8 +39,8 @@ class RLEFileReader(PatternFile):
                 y = 0
                 i = 0
                 strInt = "0"
-                # TODO: Must be redone, chosen algorithm doesn't look
-                # to be appropriate
+                # TODO: Must be redone, chosen algorithm proved to be
+                # absolutely not appropriate for the task at hand
                 while char != '!':
                     if char == '$':
                         toAdd = int(strInt)

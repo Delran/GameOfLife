@@ -5,17 +5,27 @@ Features :
 
     Scene loader/saver :
         Any scene can be loaded in the Game's grid at chosen coordinates.
+        Scenes can be rotated by 90° clockwise and counter clockwise
+        Scenes can be flipped horizontally and vertically
+
         Added scene will override any cell with a different state.
-        Simple patterns such as a glider and a pulsar can b stored as scenes.
-        WARNING : A scene MUST BE a rectangle
+
+        Game of life Patterns can be read and stored as scenes, supported format are :
+            Plain Text : .cells
+            Run length Encoded : .rle
+        Anything filename that is not terminated with a supported extension will be ignored
 
 Limitations :
 
-    The game's greed cannot realistically be higher than around 50 cells high.
-    Console graphics cannot produce a cell smaller than an ascii char.
+    Scenes/Patterns:
+      Currently, the only way to add a scene/pattern is by adding lines to main.py
+
+    Display :
+      The game's greed cannot realistically be higher than around 50 cells high.
+      Console graphics cannot produce a cell smaller than an ascii char.
 
 Future :
 
     Edit mode
-    Integration of standard Game Of Life pattern files
-    Integration on a different graphics framework
+    Integration of .life format 
+    PyQt Integration
