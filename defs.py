@@ -4,3 +4,6 @@
 # when doing logic outside of the actual grid
 ALIVECHAR = '0'
 DEADCHAR = '-'
+
+HEIGHT = 50
+LENGTH = 35

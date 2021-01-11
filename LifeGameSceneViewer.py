@@ -1,3 +1,5 @@
+# deprecated
+'''
 class LifeGameSceneViewer:
 
     __screen = None
@@ -78,3 +80,4 @@ class LifeGameSceneViewer:
         win.noutrefresh()
 
         curses.doupdate()
+'''
