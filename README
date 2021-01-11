@@ -1,7 +1,10 @@
 
-Console based implementation of Conway's Game of life using Python and Curses.
+Console based implementation of Conway's Game of life using Python PyQt and Matplotlib.
 
 Features :
+
+    GUI:
+        The Game of life can be paused and resumed at any time
 
     Scene loader/saver :
         Any scene can be loaded in the Game's grid at chosen coordinates.
@@ -20,12 +23,7 @@ Limitations :
     Scenes/Patterns:
       Currently, the only way to add a scene/pattern is by adding lines to main.py
 
-    Display :
-      The game's greed cannot realistically be higher than around 50 cells high.
-      Console graphics cannot produce a cell smaller than an ascii char.
-
 Future :
 
     Edit mode
-    Integration of .life format 
-    PyQt Integration
+    Integration of .life format

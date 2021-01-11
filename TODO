@@ -1,5 +1,7 @@
 GUI :
-  Update GUI to PyQt
+  Add save scene GUI
+  Add edit mode
+  Add pattern loader
 
   Edit mode:
     Edit scene with keyboard
@@ -18,5 +20,4 @@ Scene:
   Should have a pointer on a scene that can be rotated
 
 Bugs:
-  Curses will raise exceptions when trying to create a window
-  out of range of the terminal, catch error and fix the crash
+  
