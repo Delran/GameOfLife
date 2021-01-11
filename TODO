@@ -3,6 +3,10 @@ GUI :
   Add edit mode
   Add pattern loader
 
+  Qt :
+      Wrap layouts inside Widgets to have better control over
+      the GUI size
+
   Edit mode:
     Edit scene with keyboard
     Edit scene with mouse
@@ -20,4 +24,3 @@ Scene:
   Should have a pointer on a scene that can be rotated
 
 Bugs:
-  

@@ -1,4 +1,4 @@
-from PatternFileManager.PatternReader.PatternFile import PatternFile
+from SceneManager.PatternReader.PatternFile import PatternFile
 
 import defs
 

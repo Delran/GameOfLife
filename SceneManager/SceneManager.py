@@ -1,18 +1,22 @@
-'''
 import os.path
 from os import path
 import csv
 
-from PatternFileManager.PatternFileManager import PatternFileManager
+from SceneManager.PatternReader.PlainFileReader import PlainFileReader
+from SceneManager.PatternReader.RLEFileReader import RLEFileReader
+from SceneManager.PatternReader.LegacyFileReader import LegacyFileReader
 
-# TODO: A Scene class must be created to handle
-# scenes individually
+
+# TODO: dictionnary of handled extentions with lambda constructors ?
 class SceneManager:
 
-    __sceneFolderPath = ""
-    __scenes = []
+    __patternFiles = []
 
-    __patternManager = None
+    RLE_EXT = ".rle"
+    PLAIN_EXT = ".cells"
+    LEGACY_EXT = ".del"
+
+    __sceneFolderPath = ""
 
     def __init__(self, _path):
         if not path.isdir(_path):
@@ -21,8 +25,35 @@ class SceneManager:
         if _path[-1] != '/':
             _path += '/'
         self.__sceneFolderPath = _path
-        self.__patternManager = PatternFileManager(self.__sceneFolderPath)
         self.__scenes = os.listdir(self.__sceneFolderPath)
+
+        # recursively get all files with handled extensions
+        self.__exploreDir(_path)
+
+    # Recursive function to explore all dirs at given path
+    def __exploreDir(self, _path):
+        files = os.listdir(_path)
+        for file in files:
+            fpath = _path + file
+            if os.path.isdir(fpath):
+                # Calls itself if the file is a directory
+                self.__exploreDir(fpath+'/')
+            else:
+                # Getting lowered filename to avoid unexpected problems
+                lower = fpath.lower()
+                # Test if the filename ends with an handled extention
+                # Passing len(self.__patternFiles) to use the size of the
+                # pattern list as unique ID
+                if lower.endswith(self.RLE_EXT):
+                    reader = RLEFileReader(fpath, len(self.__patternFiles))
+                elif lower.endswith(self.PLAIN_EXT):
+                    reader = PlainFileReader(fpath, len(self.__patternFiles))
+                elif lower.endswith(self.LEGACY_EXT):
+                    reader = LegacyFileReader(fpath, len(self.__patternFiles))
+                # If the extention is not recognized, do just continue
+                else:
+                    continue
+                self.__patternFiles.append(reader)
 
     def loadScene(self, name):
         if name not in self.__scenes:
@@ -35,7 +66,7 @@ class SceneManager:
         return scene
 
     def getScenes(self):
-        return self.__scenes
+        return self.__patternFiles
 
     # TODO: following functions should be moved to a Scene class
     # Grids can easily be rotated and mirrored using
@@ -93,4 +124,3 @@ class SceneManager:
 
     def __getFullPath(self, name):
         return self.__sceneFolderPath + name
-'''

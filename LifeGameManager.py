@@ -4,7 +4,7 @@
 import numpy as np
 
 from LifeNode import LifeNode
-from SceneManager import SceneManager
+# from SceneManager import SceneManager
 # Scene viewer was build for Curses
 # it is now deprecated and Qt handle
 # the display
@@ -29,9 +29,9 @@ class LifeGameManager:
 
     anim = None
 
-    def __init__(self, length, height, sceneDir, period=0.3):
+    def __init__(self, length, height, sceneManager):
 
-        self.__sceneManager = SceneManager(sceneDir)
+        self.__sceneManager = sceneManager
         self.__createGrid(length, height)
         # self.__sceneManager.saveScene(self.__displayGrid, "testPulsar")
 
