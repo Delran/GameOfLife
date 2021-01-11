@@ -2,13 +2,17 @@ import os.path
 from os import path
 import csv
 
+from PatternFileManager.PatternFileManager import PatternFileManager
+
 
 # TODO: A Scene class must be created to handle
 # scenes individually
-class LifeGameSceneLoader:
+class SceneManager:
 
     __sceneFolderPath = ""
     __scenes = []
+
+    __patternManager = None
 
     def __init__(self, _path):
         if not path.isdir(_path):
@@ -17,6 +21,7 @@ class LifeGameSceneLoader:
         if _path[-1] != '/':
             _path += '/'
         self.__sceneFolderPath = _path
+        self.__patternManager = PatternFileManager(self.__sceneFolderPath)
         self.__scenes = os.listdir(self.__sceneFolderPath)
 
     def loadScene(self, name):
@@ -35,7 +40,7 @@ class LifeGameSceneLoader:
     # for range x: for reversed y    === 90° rotation clockwise
     # for reversed x: for range y    === 90° rotation counter clockwise
     # for reversed x: for reversed y === 180° rotation
-    def rotateScene(self, scene, rangeX, rangeY):
+    def __rotateScene(self, scene, rangeX, rangeY):
         rotatedScene = []
         for x in rangeX:
             row = []
@@ -51,14 +56,14 @@ class LifeGameSceneLoader:
         # Using manually inverted range that print the same
         # result doesn't appear to have this problem
         rangeY = range(len(scene)-1, -1, -1)
-        return self.rotateScene(scene, rangeX, rangeY)
+        return self.__rotateScene(scene, rangeX, rangeY)
 
     def rotateSceneCounterClockwise(self, scene):
         rangeX = reversed(range(len(scene[0])))
         rangeY = range(len(scene))
-        return self.rotateScene(scene, rangeX, rangeY)
+        return self.__rotateScene(scene, rangeX, rangeY)
 
-    def flipScene(self, scene, rangeX, rangeY):
+    def __flipScene(self, scene, rangeX, rangeY):
         flipedScene = []
         for y in rangeY:
             row = []
@@ -70,12 +75,12 @@ class LifeGameSceneLoader:
     def flipHorizontal(self, scene):
         rangeX = range(len(scene[0])-1, -1, -1)
         rangeY = range(len(scene))
-        return self.flipScene(scene, rangeX, rangeY)
+        return self.__flipScene(scene, rangeX, rangeY)
 
     def flipVertical(self, scene):
         rangeX = range(len(scene[0]))
         rangeY = range(len(scene)-1, -1, -1)
-        return self.flipScene(scene, rangeX, rangeY)
+        return self.__flipScene(scene, rangeX, rangeY)
 
     def saveScene(self, grid, sceneName):
         with open(self.__getFullPath(sceneName), 'w', newline='') as csvfile:
