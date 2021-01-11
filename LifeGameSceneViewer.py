@@ -1,6 +1,3 @@
-import curses
-
-
 class LifeGameSceneViewer:
 
     __screen = None
