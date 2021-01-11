@@ -5,12 +5,14 @@ import csv
 from SceneManager.PatternReader.PlainFileReader import PlainFileReader
 from SceneManager.PatternReader.RLEFileReader import RLEFileReader
 from SceneManager.PatternReader.LegacyFileReader import LegacyFileReader
+from SceneManager.Scene import Scene
 
 
 # TODO: dictionnary of handled extentions with lambda constructors ?
 class SceneManager:
 
     __patternFiles = []
+    __loadedScenes = []
 
     RLE_EXT = ".rle"
     PLAIN_EXT = ".cells"
@@ -54,6 +56,21 @@ class SceneManager:
                 else:
                     continue
                 self.__patternFiles.append(reader)
+
+    def createScene(self, id):
+        pattern = self.__patternFiles[id]
+        scene = Scene(self.__patternFiles[id], pattern.getName())
+        # No need to keep a reference ?
+        # self.__loadedScenes.append(scene)
+        return scene
+
+    '''
+    Useless ?
+    def getLoadedScenes(self):
+        return self.__loadedScenes
+    '''
+
+    # Need for a delete scene function ?
 
     def loadScene(self, name):
         if name not in self.__scenes:

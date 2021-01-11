@@ -1,7 +1,9 @@
 import sys
 import matplotlib
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QWidget
 
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
@@ -46,6 +48,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # TODO : Move all the boring layout thingy out of here
 
         # Start and pause buttons
+        # TODO: replace the two buttons by one ?
         hbox = QtWidgets.QVBoxLayout()
         self.__startButton = QtWidgets.QPushButton("Start", self)
         self.__stopButton = QtWidgets.QPushButton("Pause", self)
@@ -63,6 +66,14 @@ class MainWindow(QtWidgets.QMainWindow):
         # Gui definition
         # Scene loader GUI
         sceneEditLayout = QtWidgets.QVBoxLayout()
+
+        addSceneText = QtWidgets.QLabel("Choose a scene")
+        labelLayout = QtWidgets.QVBoxLayout()
+        labelLayout.addWidget(addSceneText)
+        labelLayout.setAlignment(Qt.AlignCenter)
+        sceneEditLayout.addLayout(labelLayout)
+
+        # Scene combobox
         self.__sceneBox = QtWidgets.QComboBox(self)
 
         scenes = self.__sceneManager.getScenes()
@@ -74,7 +85,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # Scene informations
         self.__sceneDesc = QtWidgets.QTextEdit(self)
         self.__sceneDesc.setReadOnly(True)
-        self.__sceneDesc.setPlaceholderText("No informations")
+        placeholder = "No information\n"
+        placeholder += "(This view will contains the description of the chosen scene)"
+        self.__sceneDesc.setPlaceholderText(placeholder)
         self.__sceneDesc.setMaximumHeight(int(self.height()/2))
         sceneEditLayout.addWidget(self.__sceneDesc)
 
@@ -89,21 +102,72 @@ class MainWindow(QtWidgets.QMainWindow):
         sceneEditLayout.addLayout(coordLayout)
 
         # Add scene button
-        self.__sceneAdd = QtWidgets.QPushButton("Add scene", self)
-        sceneEditLayout.addWidget(self.__sceneAdd)
+        self.__sceneAddButton = QtWidgets.QPushButton("Add scene", self)
+        self.__sceneAddButton.clicked.connect(self.__addSceneCallback)
+        sceneEditLayout.addWidget(self.__sceneAddButton)
+
         # Loaded scene/pattern list
+        self.__sceneList = QtWidgets.QListWidget(self)
+        self.__sceneList.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectItems);
+        self.__sceneList.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection);
+        self.__sceneList.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.__sceneList.customContextMenuRequested[QtCore.QPoint].connect(self.__sceneListMenu)
+        sceneEditLayout.addWidget(self.__sceneList)
 
         # Gui layout
-        sceneEditLayout.setAlignment(QtCore.Qt.AlignTop)
+        sceneEditLayout.setAlignment(Qt.AlignTop)
         layout.addLayout(sceneEditLayout)
 
         # Game layout
-        hbox.setAlignment(QtCore.Qt.AlignCenter)
+        hbox.setAlignment(Qt.AlignCenter)
         gameLayout = QtWidgets.QVBoxLayout()
         gameLayout.addLayout(hbox)
         gameLayout.addWidget(self.canvas)
 
         layout.addLayout(gameLayout)
+
+    def __addSceneCallback(self):
+        sceneId = self.__sceneBox.currentIndex()
+        scene = self.__sceneManager.createScene(sceneId)
+        self.__sceneList.addItem(scene)
+        # self.__updateSceneList()
+
+    # Empty function for signal tests
+    def __doNothing(self):
+        pass
+
+    def __sceneListMenu(self):
+        # Get global position of the mouse
+        globalCoords = QtGui.QCursor.pos()
+        # Get the position relative to the QListWidget
+        relativeCoords = QWidget.mapFromGlobal(self.__sceneList, globalCoords)
+        # Get the selected item
+        selected = self.__sceneList.itemAt(relativeCoords);
+        # If we clicked an item, show the menu at coords
+        if selected:
+            rightMenu = QtWidgets.QMenu("Choose")
+            # self.__sceneList.removeItemWidget(QtWidgets.QListWidgetItem(selected))
+            # self.__sceneList.takeItem(0)
+            fn = lambda: self.__sceneList.takeItem(self.__sceneList.currentRow())
+            removeAction = QtWidgets.QAction("Delete", self, triggered = fn)
+            rightMenu.addAction(removeAction)
+
+            addAction = QtWidgets.QAction("Rename", self, triggered = selected.rename) # define objects can be specified from the event
+            rightMenu.addAction(addAction)
+            rightMenu.exec_(globalCoords)
+
+        # else, no item clicked, do nothing
+
+    # With Scenes directly inheriting from
+    # QListWidgetItem, they can be managed
+    # as is directly from the Widget
+    '''
+    def __updateSceneList(self):
+        scenes = self.__sceneManager.getLoadedScenes()
+        self.__sceneList.clear()
+        for scene in scenes:
+            self.__sceneList.addItem(scene)
+    '''
 
     def __launchAnimCallback(self):
         # Stat the matplotlib animation
