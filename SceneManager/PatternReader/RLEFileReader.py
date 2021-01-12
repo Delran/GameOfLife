@@ -1,4 +1,5 @@
 import numpy as np
+import re
 
 from SceneManager.PatternReader.PatternFile import PatternFile
 
@@ -8,72 +9,64 @@ class RLEFileReader(PatternFile):
     def __init__(self, _path, _id):
         super(RLEFileReader, self).__init__(_path, _id, 'o', 'b')
 
+    # Get match and remove the regex from the matched string
+    def searchAndRm(self, regex, string):
+        tmp = re.search(regex + '.*', string)
+        if tmp is not None:
+            tmp = tmp.group(0)
+            rmv = re.match(regex, tmp)
+            return tmp[rmv.end():]
+        return None
+
     # TODO : Make subfunctions
     def read(self):
         if self.pattern is None:
             self.pattern = []
             with open(self.getPath(), encoding='UTF-8') as patternFile:
-                line = patternFile.readline()
-                # Skipping the first batch of commented lines
-                while line[0] == '#':
-                    line = patternFile.readline()
-                # First line without comment is the header
-                # x=??,y=??,?????
-                headerLine = line.replace(" ", "")
-                headers = headerLine.split(',')
-                length = int(headers[0][2:])
-                height = int(headers[1][2:])
 
-                self.length = length
-                self.height = height
-
-                self.pattern = np.zeros((height, length), dtype=float)
-
-                # TODO: Parse the pattern's rules
+                # First, get the whole text into a string
                 full = ""
                 for line in patternFile:
-                    if line[0] != '#':
-                        full += line.strip()
+                    full += line
 
-                char = full[0]
+                # Get comments
+                # '# N' is the name of the pattern
+                self._setName(self.searchAndRm('#\s*N\s+', full))
+                self._setDesc(self.searchAndRm('#\s*C\s+', full))
+                # Get pattern dimensions and rules
+                dimensions = re.search('\\nx.*', full)
+                dimensions = dimensions.group(0)
+                dimensions = re.findall('\d+[^,]*', dimensions)
+
+                self.length = int(dimensions[0])
+                self.height = int(dimensions[1])
+                self.pattern = np.zeros((self.height, self.length), dtype=float)
+
+                # This regex match any rle <run_count><tag>
+                runTagRe = '\d*\s*[ob$]'
+                # Getting the run length encoded data
+                # match one or more runTagRe until !
+                rle = re.search('(' + runTagRe + '+\s*)+!', full)
+                # remove whitespaces
+                rle = "".join(rle.group(0).split())
+
                 x = 0
                 y = 0
-                i = 0
-                strInt = "0"
-                # TODO: Must be redone, chosen algorithm proved to be
-                # absolutely not appropriate for the task at hand
-                while char != '!':
-                    if char == '$':
-                        toAdd = int(strInt)
-                        toAdd = 1 if toAdd == 0 else toAdd
-                        for j in range(toAdd):
+                while rle[0] != '!':
+                    # Match a rle <run_count><tag> group
+                    match = re.match(runTagRe, rle)
+                    rle = rle[match.end():]
+                    match = match.group(0)
+                    number = re.match('\d+', match)
+                    tag = match[-1]
+                    number = int(number.group(0)) if number is not None else 1
+                    for i in range(0, number):
+                        if tag == '$':
                             y += 1
                             x = 0
-                        strInt = "0"
-                    elif char == self.aliveChar():
-                        # print(strInt)
-                        toAdd = int(strInt)
-                        toAdd = 1 if toAdd == 0 else toAdd
-                        for j in range(toAdd):
-                            # print("y : {}, x :   {}".format(y,x))
-                            # self.pattern[y][x] = defs.ALIVECHAR
-                            self.pattern[y][x] = True
+                        else:
+                            self.pattern[y][x] = tag == 'o'
                             x += 1
-                        strInt = "0"
-                    elif char == self.deadChar():
-                        # print(strInt)
-                        toAdd = int(strInt)
-                        toAdd = 1 if toAdd == 0 else toAdd
-                        for j in range(toAdd):
-                            # print("y : {}, x : {}".format(y,x))
-                            # self.pattern[y][x] = defs.DEADCHAR
-                            self.pattern[y][x] = False
-                            x += 1
-                        strInt = "0"
-                    else:
-                        strInt += char
-                    i += 1
-                    char = full[i]
 
                 patternFile.close()
 

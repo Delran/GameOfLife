@@ -17,7 +17,7 @@ import defs
 
 matplotlib.use('Qt5Agg')
 
-
+# TODO : Move to class file, avoid poluting main
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
@@ -41,10 +41,20 @@ class MainWindow(QtWidgets.QMainWindow):
         self.__sceneManager.setScenesWidget(self.__loadedSceneList)
 
         self.__gameOfLife = LifeGameManager(self.__length, self.__height, self.__sceneManager)
-        self.__gameOfLife.addGliderGun()
-        self.__gameOfLife.addPulsar()
+
+        self.__sceneManager.createSceneFromName("null")
+        # self.__gameOfLife.addGliderGun()
+        # self.__gameOfLife.addPulsar()
 
         matrix = self.__gameOfLife.getLogicalGrid()
+
+        # DO NOT REMOVE, THIS IS A HACK
+        # Setting the first pyplot figure with an
+        # empty matrix result in animations functions
+        # doing nothing, we set one cell alive on the
+        # display grid to start the animations
+        matrix[self.__height-1][self.__length-1]=True
+
         self.__img = self.canvas.axes.imshow(matrix, interpolation='None', cmap='viridis', aspect='equal')
 
         # Launch the scenes edit mode animation
@@ -201,21 +211,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # else, no item clicked, do nothing
 
-    '''
-
-    # Handling Qt key event
-    def keyPressEvent(self, event):
-         key = event.key()
-         self.keyMap[Qt.Key_Z]
-         if key == Qt.Key_Left:
-            print('Left Arrow Pressed')
-         elif key == Qt.Key_Right:
-            print('Left Arrow Pressed')
-         elif key == Qt.Key_Up:
-            print('Left Arrow Pressed')
-         elif key == Qt.Key_Down:
-            print('Left Arrow Pressed')
-    '''
     def eventFilter(self, object, event):
         # Filter event for the loaded scene widget
         if object == self.__loadedSceneList:
@@ -239,10 +234,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 elif key == Qt.Key_Delete:
                     self.__sceneManager.deleteCurrentScene()
                     return True
-                # try:
-                #     test = self.keyMap[key]
-                # except KeyError:
-                #     pass
 
             elif event.type() == QtCore.QEvent.MouseButtonPress:
                 return True
@@ -278,7 +269,6 @@ class GameOfLifeCanvas(FigureCanvas):
     def __init__(self, parent, width, height):
         fig = Figure(figsize=(width, height))
         self.axes = fig.add_subplot(111)
-
         FigureCanvas.__init__(self, fig)
         self.setParent(parent)
 

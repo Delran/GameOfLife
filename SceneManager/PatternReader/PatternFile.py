@@ -23,6 +23,8 @@ class PatternFile(metaclass=ABCMeta):
         tokens = tokens[-1].split('.')
         self.__name = tokens[0]
 
+        self.__desc = ""
+
         self.length = 0
         self.height = 0
 
@@ -34,6 +36,17 @@ class PatternFile(metaclass=ABCMeta):
 
     def getName(self):
         return self.__name
+
+    def _setName(self, name):
+        if name is not None:
+            self.__name = name
+
+    def _setDesc(self, desc):
+        if desc is not None:
+            self.__desc = desc
+
+    def getDesc(self):
+        return self.__desc
 
     def aliveChar(self):
         return self.__ALIVE_CHAR

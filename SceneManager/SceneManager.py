@@ -62,9 +62,16 @@ class SceneManager:
                     continue
                 self.__patternFiles.append(reader)
 
+    def createSceneFromName(self, str):
+        for i in range(len(self.__patternFiles)):
+            pattern = self.__patternFiles[i]
+            if pattern.getName() == str:
+                self.createScene(i, 0, 0)
+                break
+
     def createScene(self, id, x, y):
         pattern = self.__patternFiles[id]
-        scene = Scene(self.__sceneGUID, pattern, pattern.getName(), x, y)
+        scene = Scene(self.__sceneGUID, pattern, x, y)
         self.__loadedScenes.append(scene)
         self.__sceneGUID += 1
 
@@ -99,7 +106,7 @@ class SceneManager:
 
     def loadScene(self, name):
         if name not in self.__scenes:
-            raise "No scene of given name : {}".format(name)
+            raise ValueError("No scene of given name : {}".format(name))
         scene = []
         with open(self.__getFullPath(name), encoding='UTF-8') as csvfile:
             sceneReader = csv.reader(csvfile)

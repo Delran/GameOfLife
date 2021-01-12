@@ -1,5 +1,4 @@
-
-Console based implementation of Conway's Game of life using Python PyQt and Matplotlib.
+Implementation of Conway's Game of life using Python PyQt and Matplotlib.
 
 Features :
 
@@ -17,6 +16,23 @@ Features :
             Plain Text : .cells
             Run length Encoded : .rle
         Anything filename that is not terminated with a supported extension will be ignored
+
+How to use :
+      You can start and pause the game at any time with the dedicated buttons
+      Any file with the .rle or .cells extension located in the subfolder "Scenes"
+  will be loaded into the combobox at the top left of the screen
+
+      You can choose anyone of them and click the "Add scene" button,
+  you can also specify a set of coordinates where the scene will be added.
+
+      You can select any added scene with the given list, and move them with the ZQSD or arrow keys
+      F2 to rename the scene and Suppr to delete it, you can also right click on them to show a context menu
+
+      You must press the Merge scene button to add your scenes to the game, once merged
+      a scene cannot be interacted with anymore and will be removed from the scene list
+
+      If you start the game without merging the scene, they will disappear while the game is running and
+      reappear the next time you press the pause button.
 
 Limitations :
 

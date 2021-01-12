@@ -53,7 +53,9 @@ class LifeGameManager:
     # So the logical grid is, for now, converted to a boolean numpy matrix
     # each generation.
     def getLogicalGrid(self):
-        # Creating a zero matrix of type bools
+        # Creating a zero matrix
+        # Will be used as boolean, dtype to float for
+        # easy handling of different colors for display
         matrix = np.zeros((self.__height, self.__length), dtype=float)
 
         # Commented here is an lambda made that made use of
@@ -69,8 +71,6 @@ class LifeGameManager:
         for i in range(self.__height):
             for j in range(self.__length):
                 matrix[i][j] = self.__grid[i][j].isAlive()
-
-        # Utils.printMatrix(matrix)
 
         return matrix
 
@@ -113,9 +113,69 @@ class LifeGameManager:
             for j in range(self.__length):
                 self.__grid[i][j].setAlive(matrix[i][j])
 
-    # Deprecated legacy functions
+    def __createGrid(self, length, height):
+
+        # Encapsulating length and height init
+        # at grid creation, this is the only
+        # time these params should be modified
+        self.__length = length
+        self.__height = height
+
+        self.__area = self.__length * self.__height
+
+        self.__grid = []
+        for i in range(self.__height):
+            self.__grid.append([])
+            row = self.__grid[i]
+            for j in range(self.__length):
+                node = LifeNode()
+                row.append(node)
+
+        # ANNONYMOUS FUNCTION DEFINITION
+        # Lambda function that will link each not to its neighbours
+        def linkLambda(i, j): self.__grid[i][j].link(
+                    # Defining the array of link
+                    [
+                        # Pylama complains about whitespaces, couldn't care less
+                        self.__grid[(i-1) % self.__height][(j)   % self.__length],  # North
+                        self.__grid[(i-1) % self.__height][(j+1) % self.__length],  # NorthEast
+                        self.__grid[(i)   % self.__height][(j+1) % self.__length],  # East
+                        self.__grid[(i+1) % self.__height][(j+1) % self.__length],  # SouthEast
+                        self.__grid[(i+1) % self.__height][(j)   % self.__length],  # South
+                        self.__grid[(i+1) % self.__height][(j-1) % self.__length],  # SouthWest
+                        self.__grid[(i)   % self.__height][(j-1) % self.__length],  # West
+                        self.__grid[(i-1) % self.__height][(j-1) % self.__length],  # NorthWest
+                    ])
+        self.__forEachNode(linkLambda)
+
+    # Pass i and j as params to given lambda
+    # for each node in the grid
+    def __forEachNode(self, fnLambda):
+        for i in range(self.__height):
+            for j in range(self.__length):
+                fnLambda(i, j)
+
+    # Todo: make a lambda that allows the use of __forEachNode
+    def printGrid(self):
+        # testLambda = lambda i, j: self.__grid[i][j].print()
+        for i in range(self.__height):
+            row = []
+            for j in range(self.__length):
+                node = self.__grid[i][j]
+                char = defs.ALIVECHAR if node.isAlive() else defs.DEADCHAR
+                row.append(char)
+            print(row)
+            self.__displayGrid.append(row)
+
+    '''
+    ===============================================================
+    ============ DEPRECATED SCENE ADDING FUNCTIONS ================
+    ===============================================================
+    '''
     # These functions are not part of the GUI and will only work
     # on .del legacy pattern files
+    # There are kept only for debug purpose and will be removed
+    # when no longer needed
     def addScene(self, scene, x=0, y=0):
 
         # If a string was passed as argument,
@@ -160,59 +220,8 @@ class LifeGameManager:
     def saveScene(self, name):
         self.__sceneManager.saveScene(self.__displayGrid, name)
 
-    def __createGrid(self, length, height):
-
-        # Encapsulating length and height init
-        # at grid creation, this is the only
-        # time these params should be modified
-        self.__length = length
-        self.__height = height
-
-        self.__area = self.__length * self.__height
-
-        self.__grid = []
-        for i in range(self.__height):
-            self.__grid.append([])
-            row = self.__grid[i]
-            for j in range(self.__length):
-                node = LifeNode()
-                row.append(node)
-
-        # ANNONYMOUS FUNCTION DEFINITION
-        # Lambda function that will link each not to its neighbours
-        def linkLambda(i, j): self.__grid[i][j].link(
-                    # Defining the array of link
-                    [
-                        # This can surely be automated, think about it
-                        self.__grid[(i-1) % self.__height][(j) % self.__length],    # North
-                        self.__grid[(i-1) % self.__height][(j+1) % self.__length],  # NorthEast
-                        self.__grid[(i) % self.__height][(j+1) % self.__length],    # East
-                        self.__grid[(i+1) % self.__height][(j+1) % self.__length],  # SouthEast
-                        self.__grid[(i+1) % self.__height][(j) % self.__length],    # South
-                        self.__grid[(i+1) % self.__height][(j-1) % self.__length],  # SouthWest
-                        self.__grid[(i) % self.__height][(j-1) % self.__length],    # West
-                        self.__grid[(i-1) % self.__height][(j-1) % self.__length],  # NorthWest
-                    ])
-        self.__forEachNode(linkLambda)
-
-    # Pass i and j as params to given lambda
-    # for each node in the grid
-    def __forEachNode(self, fnLambda):
-        for i in range(self.__height):
-            for j in range(self.__length):
-                fnLambda(i, j)
-
-    def getFig(self):
-        return self.__fig
-
-    # Todo: make a lambda that allows the use of __forEachNode
-    def printGrid(self):
-        # testLambda = lambda i, j: self.__grid[i][j].print()
-        for i in range(self.__height):
-            row = []
-            for j in range(self.__length):
-                node = self.__grid[i][j]
-                char = defs.ALIVECHAR if node.isAlive() else defs.DEADCHAR
-                row.append(char)
-            print(row)
-            self.__displayGrid.append(row)
+    '''
+    ===============================================================
+    ================ END DEPRECATED FUNCTIONS =====================
+    ===============================================================
+    '''

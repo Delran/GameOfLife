@@ -1,6 +1,8 @@
 GUI :
   Add save scene GUI
   Add edit mode
+  Add flush button
+  Add rotate and flip to GUI scenes
 
   Qt :
       Wrap layouts inside Widgets to have better control over

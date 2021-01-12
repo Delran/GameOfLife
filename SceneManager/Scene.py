@@ -9,8 +9,7 @@ from SceneManager.PatternReader.PatternFile import PatternFile
 # This almost nullifies the need for a manager
 class Scene(QListWidgetItem):
 
-    def __init__(self, id, reader, name, x=0, y=0):
-        QListWidgetItem.__init__(self, name)
+    def __init__(self, id, reader, x=0, y=0):
         if not isinstance(reader, PatternFile):
             raise TypeError("Instanciating scene with a patern not derived from PatternFile")
 
@@ -20,7 +19,8 @@ class Scene(QListWidgetItem):
         self.__reader = reader
         # Get grid from reader.
         self.__pattern = self.__reader.read()
-        self.__name = name
+        self.__name = self.__reader.getName()
+        QListWidgetItem.__init__(self, self.__name)
 
     def getName(self):
         return self.__name
