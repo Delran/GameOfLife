@@ -17,7 +17,6 @@ import defs
 class LifeGameManager:
 
     __grid = []
-    __displayGrid = []
     __length = 0
     __height = 0
     __area = 0
@@ -34,7 +33,6 @@ class LifeGameManager:
 
         self.__sceneManager = sceneManager
         self.__createGrid(length, height)
-        # self.__sceneManager.saveScene(self.__displayGrid, "testPulsar")
 
     def updateGrid(self):
         self.__cycle()
@@ -155,18 +153,6 @@ class LifeGameManager:
             for j in range(self.__length):
                 fnLambda(i, j)
 
-    # Todo: make a lambda that allows the use of __forEachNode
-    def printGrid(self):
-        # testLambda = lambda i, j: self.__grid[i][j].print()
-        for i in range(self.__height):
-            row = []
-            for j in range(self.__length):
-                node = self.__grid[i][j]
-                char = defs.ALIVECHAR if node.isAlive() else defs.DEADCHAR
-                row.append(char)
-            print(row)
-            self.__displayGrid.append(row)
-
     '''
     ===============================================================
     ============ DEPRECATED SCENE ADDING FUNCTIONS ================
@@ -216,9 +202,6 @@ class LifeGameManager:
     def addGlider(self, x=0, y=0):
         # making a standard glider
         self.addScene("glider.del", x, y)
-
-    def saveScene(self, name):
-        self.__sceneManager.saveScene(self.__displayGrid, name)
 
     '''
     ===============================================================

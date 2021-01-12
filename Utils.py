@@ -12,6 +12,12 @@ def gridToMatrix(grid, height, length):
 
     return matrix
 
+def printGrid(grid):
+    for i in range(len(grid)):
+        row = []
+        for j in range(len(grid[0])):
+            row.append(grid[i][j])
+        print(row)
 
 def printMatrix(matrix):
     for x in matrix:

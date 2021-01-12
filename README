@@ -27,6 +27,8 @@ How to use :
 
       You can select any added scene with the given list, and move them with the ZQSD or arrow keys
       F2 to rename the scene and Suppr to delete it, you can also right click on them to show a context menu
+      You can use the keys A and E to rotate it counter clockwise and clockwise respectively
+      You can use the keys W and C to flip it horizontally and vertically respectively
 
       You must press the Merge scene button to add your scenes to the game, once merged
       a scene cannot be interacted with anymore and will be removed from the scene list
@@ -36,12 +38,12 @@ How to use :
 
 Limitations :
 
+    GUI:
+        The grid cannot be resized at runtime
+
     Edit Mode:
         The use of matplotlib FuncAnimation makes that the view doesn't update in real time
         this result in a few ms of lag between input from user and refresh on the game
-
-    Scenes/Patterns:
-        Currently, the only way to add a scene/pattern is by adding lines to main.py
 
 Future :
 

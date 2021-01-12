@@ -228,6 +228,12 @@ class MainWindow(QtWidgets.QMainWindow):
                 elif key == Qt.Key_Down or key == Qt.Key_S:
                     self.__sceneManager.moveCurrent((0,1))
                     return True
+                elif key == Qt.Key_A or key == Qt.Key_E:
+                    self.__sceneManager.rotateCurrent(key == Qt.Key_A)
+                    return True
+                elif key == Qt.Key_W or key == Qt.Key_C:
+                    self.__sceneManager.flipCurrent(key == Qt.Key_W)
+                    return True
                 elif key == Qt.Key_F2:
                     self.__sceneManager.renameCurrentScene()
                     return True
