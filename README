@@ -20,8 +20,12 @@ Features :
 
 Limitations :
 
+    Edit Mode:
+        The use of matplotlib FuncAnimation makes that the view doesn't update in real time
+        this result in a few ms of lag between input from user and refresh on the game
+
     Scenes/Patterns:
-      Currently, the only way to add a scene/pattern is by adding lines to main.py
+        Currently, the only way to add a scene/pattern is by adding lines to main.py
 
 Future :
 

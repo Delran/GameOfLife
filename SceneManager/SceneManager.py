@@ -20,9 +20,12 @@ class SceneManager:
 
     __sceneFolderPath = ""
 
-    def __init__(self, _path):
+    def __init__(self, _path, length, height):
         if not path.isdir(_path):
             raise "Cannot find specified folder for scenes path"
+
+        self.__length = length
+        self.__height = height
 
         if _path[-1] != '/':
             _path += '/'
@@ -32,7 +35,7 @@ class SceneManager:
         # recursively get all files with handled extensions
         self.__exploreDir(_path)
 
-        self.__id = 0
+        self.__sceneGUID = 0
 
     # Recursive function to explore all dirs at given path
     def __exploreDir(self, _path):
@@ -61,19 +64,33 @@ class SceneManager:
 
     def createScene(self, id, x, y):
         pattern = self.__patternFiles[id]
-        scene = Scene(self.__id, self.__patternFiles[id], pattern.getName(), x, y)
+        scene = Scene(self.__sceneGUID, pattern, pattern.getName(), x, y)
         self.__loadedScenes.append(scene)
-        self.__id += 1
-        return scene
+        self.__sceneGUID += 1
 
-    def deleteScene(self, scene):
-        self.__loadedScenes.remove(scene)
-        # return
-        # for i in range(len(list)):
-        #     if list[i].getId() == id:
-        #         print(i)
-        #         #list.remove(i)
-        #         break
+        self.__sceneWidget.addItem(scene)
+        self.__sceneWidget.setCurrentItem(scene)
+
+    def deleteCurrentScene(self):
+        item = self.__sceneWidget.takeItem(self.__sceneWidget.currentRow())
+        self.__loadedScenes.remove(item)
+
+    def renameCurrentScene(self):
+        self.__sceneWidget.currentItem().rename()
+
+    def moveCurrent(self, vec2):
+        scene = self.__sceneWidget.currentItem()
+        x, y = scene.getXY()
+        x = (x + vec2[0]) % self.__length
+        y = (y + vec2[1]) % self.__height
+        scene.setXY(x, y)
+
+    def clear(self):
+        self.__sceneWidget.clear()
+        self.__loadedScenes.clear()
+
+    def getCurrentScene(self):
+        return self.__sceneWidget.currentItem()
 
     def getLoadedScenes(self):
         return self.__loadedScenes
@@ -89,6 +106,9 @@ class SceneManager:
             for row in sceneReader:
                 scene.append(row)
         return scene
+
+    def setScenesWidget(self, widget):
+        self.__sceneWidget = widget
 
     def getScenes(self):
         return self.__patternFiles

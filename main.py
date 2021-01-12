@@ -22,11 +22,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
 
-        self.setMinimumSize(500, 500)
-        self._main = QtWidgets.QWidget()
-        self.setCentralWidget(self._main)
-        layout = QtWidgets.QHBoxLayout(self._main)
-
         self.__length = defs.LENGTH
         self.__height = defs.HEIGHT
 
@@ -35,12 +30,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.canvas.axes.axes.xaxis.set_visible(False)
         self.canvas.axes.axes.yaxis.set_visible(False)
 
-        self.__sceneManager = SceneManager("Scenes")
+        self.__sceneManager = SceneManager("Scenes", self.__length, self.__height)
+
+        self.__initGui()
 
         ''' Game of life creation, add scene here '''
         # Pass the scene manager to the game of life,
         # this is a temporary solution to allow addScene
         # function to continue to work with the new GUI
+        self.__sceneManager.setScenesWidget(self.__loadedSceneList)
+
         self.__gameOfLife = LifeGameManager(self.__length, self.__height, self.__sceneManager)
         self.__gameOfLife.addGliderGun()
         self.__gameOfLife.addPulsar()
@@ -48,25 +47,15 @@ class MainWindow(QtWidgets.QMainWindow):
         matrix = self.__gameOfLife.getLogicalGrid()
         self.__img = self.canvas.axes.imshow(matrix, interpolation='None', cmap='viridis', aspect='equal')
 
-        # TODO : Move all the boring layout thingy out of here
+        # Launch the scenes edit mode animation
+        self.__startSceneUpdate()
 
-        # Start and pause buttons
-        # TODO: replace the two buttons by one ?
-        hbox = QtWidgets.QVBoxLayout()
-        self.__startButton = QtWidgets.QPushButton("Start", self)
-        self.__stopButton = QtWidgets.QPushButton("Pause", self)
-        self.__stopButton.setEnabled(False)
-        self.__startButton.setMaximumWidth(200)
-        self.__stopButton.setMaximumWidth(200)
-        self.__startButton.setMinimumHeight(30)
-        self.__stopButton.setMinimumHeight(30)
+    def __initGui(self):
+        self.setMinimumSize(500, 500)
+        self._main = QtWidgets.QWidget()
+        self.setCentralWidget(self._main)
+        layout = QtWidgets.QHBoxLayout(self._main)
 
-        self.__startButton.clicked.connect(self.__launchAnimCallback)
-        self.__stopButton.clicked.connect(self.__stopAnimCallback)
-        hbox.addWidget(self.__startButton)
-        hbox.addWidget(self.__stopButton)
-
-        # Gui definition
         # Scene loader GUI
         sceneEditLayout = QtWidgets.QVBoxLayout()
 
@@ -128,6 +117,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.__loadedSceneList.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         self.__loadedSceneList.setContextMenuPolicy(Qt.CustomContextMenu)
         self.__loadedSceneList.customContextMenuRequested[QtCore.QPoint].connect(self.__loadedSceneListMenu)
+        self.__loadedSceneList.installEventFilter(self)
         sceneEditLayout.addWidget(self.__loadedSceneList)
 
         # MergeSceneButton
@@ -140,32 +130,41 @@ class MainWindow(QtWidgets.QMainWindow):
         layout.addLayout(sceneEditLayout)
 
         # Game layout
+
+        # Start and pause buttons
+        # TODO: replace the two buttons by one ?
+        hbox = QtWidgets.QVBoxLayout()
+        self.__startButton = QtWidgets.QPushButton("Start", self)
+        self.__stopButton = QtWidgets.QPushButton("Pause", self)
+        self.__stopButton.setEnabled(False)
+        self.__startButton.setMaximumWidth(200)
+        self.__stopButton.setMaximumWidth(200)
+        self.__startButton.setMinimumHeight(30)
+        self.__stopButton.setMinimumHeight(30)
+
+        self.__startButton.clicked.connect(self.__launchAnimCallback)
+        self.__stopButton.clicked.connect(self.__stopAnimCallback)
+        hbox.addWidget(self.__startButton)
+        hbox.addWidget(self.__stopButton)
+
         hbox.setAlignment(Qt.AlignCenter)
         gameLayout = QtWidgets.QVBoxLayout()
         gameLayout.addLayout(hbox)
         gameLayout.addWidget(self.canvas)
-
         layout.addLayout(gameLayout)
-
-        # Launch the scenes edit mode animation
-        self.__startSceneUpdate()
 
     def __addSceneCallback(self):
         sceneId = self.__sceneBox.currentIndex()
         x, y = self.__getSceneXY()
-        scene = self.__sceneManager.createScene(sceneId, x, y)
-        self.__loadedSceneList.addItem(scene)
-        self.__loadedSceneList.setCurrentItem(scene)
+        self.__sceneManager.createScene(sceneId, x, y)
+        # Set focus to the loaded list to use keyboard
+        self.__loadedSceneList.setFocus()
 
     def __mergeScenesCallback(self):
         self.__gameOfLife.mergeScenes()
-        listWidget = self.__loadedSceneList
-        while listWidget.count() != 0:
-            item = listWidget.takeItem(0)
-            self.__sceneManager.deleteScene(item)
+        self.__sceneManager.clear()
 
     def __getSceneXY(self):
-
         x = 0
         xStr = self.__textEditX.text()
         if xStr:
@@ -180,10 +179,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         return x, y
 
-    # Empty function for signal tests
-    def __doNothing(self):
-        pass
-
     # Context menu function for right clikcs on
     # the loaded scene menu
     def __loadedSceneListMenu(self):
@@ -197,30 +192,62 @@ class MainWindow(QtWidgets.QMainWindow):
         if selected:
             rightMenu = QtWidgets.QMenu("Choose")
 
-            # Function removeWidgetItem doesn't seems to work in PyQt
-            def fnFunc():
-                item = self.__loadedSceneList.takeItem(self.__loadedSceneList.currentRow())
-                self.__sceneManager.deleteScene(item)
-
-            removeAction = QtWidgets.QAction("Delete", self, triggered=fnFunc)
+            removeAction = QtWidgets.QAction("Delete (Suppr)", self, triggered=self.__sceneManager.deleteCurrentScene)
             rightMenu.addAction(removeAction)
 
-            addAction = QtWidgets.QAction("Rename", self, triggered=selected.rename)
+            addAction = QtWidgets.QAction("Rename (F2)", self, triggered=self.__sceneManager.renameCurrentScene)
             rightMenu.addAction(addAction)
             rightMenu.exec_(globalCoords)
 
         # else, no item clicked, do nothing
 
-    # With Scenes directly inheriting from
-    # QListWidgetItem, they can be managed
-    # as is directly from the Widget
     '''
-    def __updateSceneList(self):
-        scenes = self.__sceneManager.getLoadedScenes()
-        self.__loadedSceneList.clear()
-        for scene in scenes:
-            self.__loadedSceneList.addItem(scene)
+
+    # Handling Qt key event
+    def keyPressEvent(self, event):
+         key = event.key()
+         self.keyMap[Qt.Key_Z]
+         if key == Qt.Key_Left:
+            print('Left Arrow Pressed')
+         elif key == Qt.Key_Right:
+            print('Left Arrow Pressed')
+         elif key == Qt.Key_Up:
+            print('Left Arrow Pressed')
+         elif key == Qt.Key_Down:
+            print('Left Arrow Pressed')
     '''
+    def eventFilter(self, object, event):
+        # Filter event for the loaded scene widget
+        if object == self.__loadedSceneList:
+            if event.type() == QtCore.QEvent.KeyPress:
+                key = event.key()
+                if key == Qt.Key_Left or key == Qt.Key_Q:
+                    self.__sceneManager.moveCurrent((-1,0))
+                    return True
+                elif key == Qt.Key_Right or key == Qt.Key_D:
+                    self.__sceneManager.moveCurrent((1,0))
+                    return True
+                elif key == Qt.Key_Up or key == Qt.Key_Z:
+                    self.__sceneManager.moveCurrent((0,-1))
+                    return True
+                elif key == Qt.Key_Down or key == Qt.Key_S:
+                    self.__sceneManager.moveCurrent((0,1))
+                    return True
+                elif key == Qt.Key_F2:
+                    self.__sceneManager.renameCurrentScene()
+                    return True
+                elif key == Qt.Key_Delete:
+                    self.__sceneManager.deleteCurrentScene()
+                    return True
+                # try:
+                #     test = self.keyMap[key]
+                # except KeyError:
+                #     pass
+
+            elif event.type() == QtCore.QEvent.MouseButtonPress:
+                return True
+
+        return False
 
     # TODO : Merge theses two buttons into one
     # Callback for Play/Resume button
@@ -240,7 +267,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.__startSceneUpdate()
 
     def __startSceneUpdate(self):
-        self.__editAnim = FuncAnimation(self.canvas.figure, updateScenesDisplay, fargs=(self.__img, self.__gameOfLife), blit=True, repeat=False)
+        self.__editAnim = FuncAnimation(self.canvas.figure, updateScenesDisplay, fargs=(self.__img, self.__gameOfLife), interval=10, blit=True, repeat=False)
+
+    # Empty function for Qt signals tests
+    def __doNothing(self):
+        pass
 
 
 class GameOfLifeCanvas(FigureCanvas):

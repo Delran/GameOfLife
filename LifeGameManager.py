@@ -74,10 +74,13 @@ class LifeGameManager:
 
         return matrix
 
+    # TODO : Next two function will be moved to SceneManager
     # Add scenes loaded to a temporary display grid
-    def getLogicalGridWithScenes(self):
+    def getLogicalGridWithScenes(self, select=True):
         matrix = self.getLogicalGrid()
 
+        # Get the selected scene from the scene manager
+        selected = self.__sceneManager.getCurrentScene()
         loadedScenes = self.__sceneManager.getLoadedScenes()
         for scene in loadedScenes:
             sceneMatrix = scene.getMatrix()
@@ -89,18 +92,30 @@ class LifeGameManager:
 
             for i in range(sceneH):
                 for j in range(sceneL):
-                    H = (i+x) % self.__height
+                    value = sceneMatrix[i][j]
+                    if not value:
+                        continue
+                    H = (i+y) % self.__height
                     L = (j+x) % self.__length
-                    matrix[H][L] = sceneMatrix[i][j]
+                    # If this is the selected item, change the value
+                    # of the cell, this will change the color in which
+                    # the cells are displayed
+                    if select:
+                        value = value/2 if selected == scene else value
+                    matrix[H][L] = value
         return matrix
 
     def mergeScenes(self):
-
-        matrix = self.getLogicalGridWithScenes()
+        # False means we don't want to change
+        # the color of the selected scene
+        matrix = self.getLogicalGridWithScenes(False)
         for i in range(self.__height):
             for j in range(self.__length):
                 self.__grid[i][j].setAlive(matrix[i][j])
 
+    # Deprecated legacy functions
+    # These functions are not part of the GUI and will only work
+    # on .del legacy pattern files
     def addScene(self, scene, x=0, y=0):
 
         # If a string was passed as argument,

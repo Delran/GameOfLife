@@ -1,24 +1,19 @@
 GUI :
   Add save scene GUI
   Add edit mode
-  Add pattern loader
 
   Qt :
       Wrap layouts inside Widgets to have better control over
       the GUI size
 
   Edit mode:
-    Edit scene with keyboard
     Edit scene with mouse
-    Save and load scene into the grid
+    Save scene
 
 Game of Life:
   Show number of generations
 
 Scene:
-  Added scene shouldn't be added to the logical grid immediately,
-  they should be loaded, toyed with and only logically added at the
-  start of the game
   Should have a pointer on a scene that can be rotated
 
 Bugs:
