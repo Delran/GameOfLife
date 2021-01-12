@@ -29,6 +29,9 @@ class Scene(QListWidgetItem):
         if ok:
             self.setText(self.__name)
 
+    def getXY():
+        return self.__x, self.__y
+
     def getMatrix(self):
         return self.__pattern
 

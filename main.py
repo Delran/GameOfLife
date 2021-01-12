@@ -137,7 +137,7 @@ class MainWindow(QtWidgets.QMainWindow):
         scene = self.__sceneManager.createScene(sceneId,x,y)
         Utils.printMatrix(scene.getMatrix())
         self.__sceneList.addItem(scene)
-        # self.__updateSceneList()
+        self.__updateScenes()
 
     def __getSceneXY(self):
 
@@ -211,6 +211,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.__startButton.setText("Resume")
         self.anim._stop()
 
+    def __updateScenes(self):
+        anim = FuncAnimation(self.canvas.figure, updateScenesDisplay, fargs=(self.__img), blit=True, repeat=False)
+
 
 class GameOfLifeCanvas(FigureCanvas):
     def __init__(self, parent, width, height):
@@ -224,6 +227,11 @@ class GameOfLifeCanvas(FigureCanvas):
 def updateGrid(frame, img, game):
     game.updateGrid()
     matrix = game.getLogicalGrid()
+    img.set_array(matrix)
+    return img,
+
+def updateScenesDisplay(frame, img, game):
+    matrix = game.getLogicalGridWithScenes()
     img.set_array(matrix)
     return img,
 

@@ -79,9 +79,18 @@ class LifeGameManager:
 
         loadedScenes = self.__sceneManager.getLoadedScenes()
         for scene in loadedScenes:
-            for x in scene:
-                for y in scene:
-                    pass
+            sceneMatrix = scene.getMatrix()
+            x,y = scene.getXY()
+
+            shape = np.shape(sceneMatrix)
+            sceneH = shape[0]
+            sceneL = shape[1]
+
+            for i in range(sceneH):
+                for j in range(sceneL):
+                    h = (i+x)%self.__height
+                    l = (j+x)%self.__length
+                    matrix[h][l] = sceneMatrix[i][j]
 
         return matrix
 
