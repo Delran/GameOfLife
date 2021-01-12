@@ -30,6 +30,9 @@ How to use :
       You can use the keys A and E to rotate it counter clockwise and clockwise respectively
       You can use the keys W and C to flip it horizontally and vertically respectively
 
+      Scene are loaded from top to bottom, you can reorder them with drag and drop
+      ( Scenes only override living cell so this feature is not that useful )
+
       You must press the Merge scene button to add your scenes to the game, once merged
       a scene cannot be interacted with anymore and will be removed from the scene list
 

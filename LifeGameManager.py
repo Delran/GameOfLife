@@ -43,6 +43,9 @@ class LifeGameManager:
         self.__forEachNode(lambda i, j: self.__grid[i][j].compute())
         self.__forEachNode(lambda i, j: self.__grid[i][j].update())
 
+    def flush(self):
+        self.__forEachNode(lambda i, j: self.__grid[i][j].setAlive(False))
+
     # This function was added to provide support between the logical
     # grid and the matplotlib matrix,
     # Initial grid is an list of list of Nodes which cannot be converted

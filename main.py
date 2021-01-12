@@ -42,7 +42,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.__gameOfLife = LifeGameManager(self.__length, self.__height, self.__sceneManager)
 
-        self.__sceneManager.createSceneFromName("null")
         # self.__gameOfLife.addGliderGun()
         # self.__gameOfLife.addPulsar()
 
@@ -56,6 +55,9 @@ class MainWindow(QtWidgets.QMainWindow):
         matrix[self.__height-1][self.__length-1]=True
 
         self.__img = self.canvas.axes.imshow(matrix, interpolation='None', cmap='viridis', aspect='equal')
+
+        # The flush button needs to GameOfLife to be created
+        self.__flushButton.clicked.connect(self.__gameOfLife.flush)
 
         # Launch the scenes edit mode animation
         self.__startSceneUpdate()
@@ -128,6 +130,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.__loadedSceneList.setContextMenuPolicy(Qt.CustomContextMenu)
         self.__loadedSceneList.customContextMenuRequested[QtCore.QPoint].connect(self.__loadedSceneListMenu)
         self.__loadedSceneList.installEventFilter(self)
+        self.__loadedSceneList.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
         sceneEditLayout.addWidget(self.__loadedSceneList)
 
         # MergeSceneButton
@@ -147,8 +150,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.__startButton = QtWidgets.QPushButton("Start", self)
         self.__stopButton = QtWidgets.QPushButton("Pause", self)
         self.__stopButton.setEnabled(False)
-        self.__startButton.setMaximumWidth(200)
-        self.__stopButton.setMaximumWidth(200)
+        self.__startButton.setFixedWidth(100)
+        self.__stopButton.setFixedWidth(100)
         self.__startButton.setMinimumHeight(30)
         self.__stopButton.setMinimumHeight(30)
 
@@ -157,10 +160,18 @@ class MainWindow(QtWidgets.QMainWindow):
         hbox.addWidget(self.__startButton)
         hbox.addWidget(self.__stopButton)
 
+        self.__flushButton = QtWidgets.QPushButton("Flush", self)
+        self.__flushButton.setFixedWidth(200)
+        self.__flushButton.setMinimumHeight(40)
+        flushLayout = QtWidgets.QVBoxLayout()
+        flushLayout.addWidget(self.__flushButton)
+        flushLayout.setAlignment(Qt.AlignCenter)
+
         hbox.setAlignment(Qt.AlignCenter)
         gameLayout = QtWidgets.QVBoxLayout()
         gameLayout.addLayout(hbox)
         gameLayout.addWidget(self.canvas)
+        gameLayout.addLayout(flushLayout)
         layout.addLayout(gameLayout)
 
     def __addSceneCallback(self):
@@ -202,11 +213,26 @@ class MainWindow(QtWidgets.QMainWindow):
         if selected:
             rightMenu = QtWidgets.QMenu("Choose")
 
-            removeAction = QtWidgets.QAction("Delete (Suppr)", self, triggered=self.__sceneManager.deleteCurrentScene)
-            rightMenu.addAction(removeAction)
+            removeAction = QtWidgets.QAction("Delete (Suppr)",
+                self, triggered=self.__sceneManager.deleteCurrentScene)
+            addAction = QtWidgets.QAction("Rename (F2)",
+                self, triggered=self.__sceneManager.renameCurrentScene)
+            rotateClock = QtWidgets.QAction("Rotate counter (A)",
+                self, triggered=self.__sceneManager.rotateCounterCurrent)
+            rotateCounter = QtWidgets.QAction("Rotate clockwise (E)",
+                self, triggered=self.__sceneManager.rotateClockwiseCurrent)
+            flipHor = QtWidgets.QAction("Flip horizontal (W)",
+                self, triggered=self.__sceneManager.flipHorizontalCurrent)
+            flipVer = QtWidgets.QAction("Flip vertical (C)",
+                self, triggered=self.__sceneManager.flipVerticalCurrent)
 
-            addAction = QtWidgets.QAction("Rename (F2)", self, triggered=self.__sceneManager.renameCurrentScene)
+            rightMenu.addAction(removeAction)
             rightMenu.addAction(addAction)
+            rightMenu.addAction(rotateClock)
+            rightMenu.addAction(rotateCounter)
+            rightMenu.addAction(flipHor)
+            rightMenu.addAction(flipVer)
+
             rightMenu.exec_(globalCoords)
 
         # else, no item clicked, do nothing

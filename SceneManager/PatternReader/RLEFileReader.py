@@ -31,22 +31,22 @@ class RLEFileReader(PatternFile):
 
                 # Get comments
                 # '# N' is the name of the pattern
-                self._setName(self.searchAndRm('#\s*N\s+', full))
-                self._setDesc(self.searchAndRm('#\s*C\s+', full))
+                self._setName(self.searchAndRm(r'#\s*N\s+', full))
+                self._setDesc(self.searchAndRm(r'#\s*C\s+', full))
                 # Get pattern dimensions and rules
-                dimensions = re.search('\\nx.*', full)
+                dimensions = re.search('\nx.*', full)
                 dimensions = dimensions.group(0)
-                dimensions = re.findall('\d+[^,]*', dimensions)
+                dimensions = re.findall(r'\d+[^,]*', dimensions)
 
                 self.length = int(dimensions[0])
                 self.height = int(dimensions[1])
                 self.pattern = np.zeros((self.height, self.length), dtype=float)
 
                 # This regex match any rle <run_count><tag>
-                runTagRe = '\d*\s*[ob$]'
+                runTagRe = r'\d*\s*[ob$]'
                 # Getting the run length encoded data
                 # match one or more runTagRe until !
-                rle = re.search('(' + runTagRe + '+\s*)+!', full)
+                rle = re.search('(' + runTagRe + r'+\s*)+!', full)
                 # remove whitespaces
                 rle = "".join(rle.group(0).split())
 
@@ -57,7 +57,7 @@ class RLEFileReader(PatternFile):
                     match = re.match(runTagRe, rle)
                     rle = rle[match.end():]
                     match = match.group(0)
-                    number = re.match('\d+', match)
+                    number = re.match(r'\d+', match)
                     tag = match[-1]
                     number = int(number.group(0)) if number is not None else 1
                     for i in range(0, number):

@@ -69,12 +69,24 @@ class SceneManager:
                 self.createScene(i, 0, 0)
                 break
 
+    def flipHorizontalCurrent(self):
+        self.flipCurrent(True)
+
+    def flipVerticalCurrent(self):
+        self.flipCurrent(False)
+
     def flipCurrent(self, direction):
         currentScene = self.__sceneWidget.currentItem()
         if direction:
             currentScene.flipHorizontal()
         else:
             currentScene.flipVertical()
+
+    def rotateClockwiseCurrent(self):
+        self.rotateCurrent(False)
+
+    def rotateCounterCurrent(self):
+        self.rotateCurrent(True)
 
     def rotateCurrent(self, direction):
         currentScene = self.__sceneWidget.currentItem()
@@ -86,7 +98,6 @@ class SceneManager:
     def createScene(self, id, x, y):
         pattern = self.__patternFiles[id]
         scene = Scene(self.__sceneGUID, pattern, x, y)
-        scene.rotateSceneClockwise()
         self.__loadedScenes.append(scene)
         self.__sceneGUID += 1
 
@@ -115,9 +126,10 @@ class SceneManager:
         return self.__sceneWidget.currentItem()
 
     def getLoadedScenes(self):
-        return self.__loadedScenes
-
-    # Need for a delete scene function ?
+        items = []
+        for i in range(self.__sceneWidget.count()):
+            items.append(self.__sceneWidget.item(i))
+        return items
 
     def loadScene(self, name):
         if name not in self.__scenes:
