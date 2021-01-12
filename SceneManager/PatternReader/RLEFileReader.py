@@ -1,12 +1,14 @@
+import numpy as np
+
 from SceneManager.PatternReader.PatternFile import PatternFile
 
-import defs
 
 class RLEFileReader(PatternFile):
 
     def __init__(self, _path, _id):
         super(RLEFileReader, self).__init__(_path, _id, 'o', 'b')
 
+    # TODO : Make subfunctions
     def read(self):
         if self.pattern is None:
             self.pattern = []
@@ -16,7 +18,7 @@ class RLEFileReader(PatternFile):
                 while line[0] == '#':
                     line = patternFile.readline()
                 # First line without comment is the header
-                #x=??,y=??,?????
+                # x=??,y=??,?????
                 headerLine = line.replace(" ", "")
                 headers = headerLine.split(',')
                 length = int(headers[0][2:])
@@ -25,13 +27,7 @@ class RLEFileReader(PatternFile):
                 self.length = length
                 self.height = height
 
-                # for y in range(height):
-                #     row = []
-                #     for x in range(length):
-                #         row.append(defs.DEADCHAR)
-                #     self.pattern.append(row)
-
-                self.pattern = np.zeros((height, length), dtype=bool)
+                self.pattern = np.zeros((height, length), dtype=float)
 
                 # TODO: Parse the pattern's rules
                 full = ""
@@ -62,7 +58,7 @@ class RLEFileReader(PatternFile):
                             # print("y : {}, x :   {}".format(y,x))
                             # self.pattern[y][x] = defs.ALIVECHAR
                             self.pattern[y][x] = True
-                            x+=1
+                            x += 1
                         strInt = "0"
                     elif char == self.deadChar():
                         # print(strInt)
@@ -72,7 +68,7 @@ class RLEFileReader(PatternFile):
                             # print("y : {}, x : {}".format(y,x))
                             # self.pattern[y][x] = defs.DEADCHAR
                             self.pattern[y][x] = False
-                            x+=1
+                            x += 1
                         strInt = "0"
                     else:
                         strInt += char

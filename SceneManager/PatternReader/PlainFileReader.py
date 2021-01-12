@@ -3,6 +3,7 @@ from SceneManager.PatternReader.PatternFile import PatternFile
 import defs
 import Utils
 
+
 class PlainFileReader(PatternFile):
 
     def __init__(self, _path, _id):
@@ -40,7 +41,7 @@ class PlainFileReader(PatternFile):
                     for i in range(len(row), maxLength-1):
                         row.append(defs.DEADCHAR)
 
-        self.height = len(self.pattern)
-        self.length = len(self.pattern[0])
-        self.pattern = Utils.gridToMatrix(self.pattern, self.height, self.length)
+            self.height = len(self.pattern)
+            self.length = len(self.pattern[0])
+            self.pattern = Utils.gridToMatrix(self.pattern, self.height, self.length)
         return self.pattern

@@ -75,7 +75,6 @@ class SceneManager:
         #         #list.remove(i)
         #         break
 
-
     def getLoadedScenes(self):
         return self.__loadedScenes
 

@@ -13,7 +13,7 @@ from LifeGameManager import LifeGameManager
 from SceneManager.SceneManager import SceneManager
 
 import defs
-import Utils
+# import Utils
 
 matplotlib.use('Qt5Agg')
 
@@ -22,7 +22,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
 
-        self.setMinimumSize(500,500)
+        self.setMinimumSize(500, 500)
         self._main = QtWidgets.QWidget()
         self.setCentralWidget(self._main)
         layout = QtWidgets.QHBoxLayout(self._main)
@@ -98,12 +98,23 @@ class MainWindow(QtWidgets.QMainWindow):
         coordLayout = QtWidgets.QHBoxLayout()
         self.__textEditX = QtWidgets.QLineEdit(self)
         self.__textEditX.setPlaceholderText("X coords")
-        self.__textEditX.setValidator(QtGui.QIntValidator(0, self.__length, self));
-        coordLayout.addWidget(self.__textEditX)
+        maxLength = self.__length-1
+        self.__textEditX.setValidator(QtGui.QIntValidator(0, maxLength, self))
+        xLabel = QtWidgets.QLabel("Max : "+str(maxLength))
+        xLayout = QtWidgets.QVBoxLayout()
+        xLayout.addWidget(xLabel)
+        xLayout.addWidget(self.__textEditX)
+        coordLayout.addLayout(xLayout)
         self.__textEditY = QtWidgets.QLineEdit(self)
         self.__textEditY.setPlaceholderText("Y coords")
-        self.__textEditY.setValidator(QtGui.QIntValidator(0, self.__height, self));
-        coordLayout.addWidget(self.__textEditY)
+        maxHeight = self.__height-1
+        self.__textEditY.setValidator(QtGui.QIntValidator(0, maxHeight, self))
+        yLabel = QtWidgets.QLabel("Max : "+str(maxHeight))
+        yLayout = QtWidgets.QVBoxLayout()
+        yLayout.addWidget(yLabel)
+        yLayout.addWidget(self.__textEditY)
+        coordLayout.addLayout(yLayout)
+
         sceneEditLayout.addLayout(coordLayout)
 
         # Add scene button
@@ -112,12 +123,17 @@ class MainWindow(QtWidgets.QMainWindow):
         sceneEditLayout.addWidget(self.__sceneAddButton)
 
         # Loaded scene/pattern list
-        self.__sceneList = QtWidgets.QListWidget(self)
-        self.__sceneList.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectItems);
-        self.__sceneList.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection);
-        self.__sceneList.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.__sceneList.customContextMenuRequested[QtCore.QPoint].connect(self.__sceneListMenu)
-        sceneEditLayout.addWidget(self.__sceneList)
+        self.__loadedSceneList = QtWidgets.QListWidget(self)
+        self.__loadedSceneList.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectItems)
+        self.__loadedSceneList.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.__loadedSceneList.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.__loadedSceneList.customContextMenuRequested[QtCore.QPoint].connect(self.__loadedSceneListMenu)
+        sceneEditLayout.addWidget(self.__loadedSceneList)
+
+        # MergeSceneButton
+        self.__sceneMergeButton = QtWidgets.QPushButton("Merge scene", self)
+        self.__sceneMergeButton.clicked.connect(self.__mergeScenesCallback)
+        sceneEditLayout.addWidget(self.__sceneMergeButton)
 
         # Gui layout
         sceneEditLayout.setAlignment(Qt.AlignTop)
@@ -131,13 +147,22 @@ class MainWindow(QtWidgets.QMainWindow):
 
         layout.addLayout(gameLayout)
 
+        # Launch the scenes edit mode animation
+        self.__startSceneUpdate()
+
     def __addSceneCallback(self):
         sceneId = self.__sceneBox.currentIndex()
-        x,y = self.__getSceneXY()
-        scene = self.__sceneManager.createScene(sceneId,x,y)
-        Utils.printMatrix(scene.getMatrix())
-        self.__sceneList.addItem(scene)
-        self.__updateScenes()
+        x, y = self.__getSceneXY()
+        scene = self.__sceneManager.createScene(sceneId, x, y)
+        self.__loadedSceneList.addItem(scene)
+        self.__loadedSceneList.setCurrentItem(scene)
+
+    def __mergeScenesCallback(self):
+        self.__gameOfLife.mergeScenes()
+        listWidget = self.__loadedSceneList
+        while listWidget.count() != 0:
+            item = listWidget.takeItem(0)
+            self.__sceneManager.deleteScene(item)
 
     def __getSceneXY(self):
 
@@ -153,7 +178,7 @@ class MainWindow(QtWidgets.QMainWindow):
             y = int(yStr)
             y = 0 if y < 0 or y > self.__height else y
 
-        return x,y
+        return x, y
 
     # Empty function for signal tests
     def __doNothing(self):
@@ -161,25 +186,26 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Context menu function for right clikcs on
     # the loaded scene menu
-    def __sceneListMenu(self):
+    def __loadedSceneListMenu(self):
         # Get global position of the mouse
         globalCoords = QtGui.QCursor.pos()
         # Get the position relative to the QListWidget
-        relativeCoords = QWidget.mapFromGlobal(self.__sceneList, globalCoords)
+        relativeCoords = QWidget.mapFromGlobal(self.__loadedSceneList, globalCoords)
         # Get the selected item
-        selected = self.__sceneList.itemAt(relativeCoords);
+        selected = self.__loadedSceneList.itemAt(relativeCoords)
         # If we clicked an item, show the menu at coords
         if selected:
             rightMenu = QtWidgets.QMenu("Choose")
+
             # Function removeWidgetItem doesn't seems to work in PyQt
             def fnFunc():
-                item = self.__sceneList.takeItem(self.__sceneList.currentRow())
+                item = self.__loadedSceneList.takeItem(self.__loadedSceneList.currentRow())
                 self.__sceneManager.deleteScene(item)
 
-            removeAction = QtWidgets.QAction("Delete", self, triggered = fnFunc)
+            removeAction = QtWidgets.QAction("Delete", self, triggered=fnFunc)
             rightMenu.addAction(removeAction)
 
-            addAction = QtWidgets.QAction("Rename", self, triggered = selected.rename) # define objects can be specified from the event
+            addAction = QtWidgets.QAction("Rename", self, triggered=selected.rename)
             rightMenu.addAction(addAction)
             rightMenu.exec_(globalCoords)
 
@@ -191,16 +217,17 @@ class MainWindow(QtWidgets.QMainWindow):
     '''
     def __updateSceneList(self):
         scenes = self.__sceneManager.getLoadedScenes()
-        self.__sceneList.clear()
+        self.__loadedSceneList.clear()
         for scene in scenes:
-            self.__sceneList.addItem(scene)
+            self.__loadedSceneList.addItem(scene)
     '''
 
     # TODO : Merge theses two buttons into one
     # Callback for Play/Resume button
     def __launchAnimCallback(self):
         # Stat the matplotlib animation
-        self.anim = FuncAnimation(self.canvas.figure, updateGrid, fargs=(self.__img, self.__gameOfLife), blit=True, interval=200)
+        self.__editAnim._stop()
+        self.__anim = FuncAnimation(self.canvas.figure, updateGrid, fargs=(self.__img, self.__gameOfLife), blit=True, interval=200)
         self.__stopButton.setEnabled(True)
         self.__startButton.setEnabled(False)
 
@@ -209,10 +236,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.__stopButton.setEnabled(False)
         self.__startButton.setEnabled(True)
         self.__startButton.setText("Resume")
-        self.anim._stop()
+        self.__anim._stop()
+        self.__startSceneUpdate()
 
-    def __updateScenes(self):
-        anim = FuncAnimation(self.canvas.figure, updateScenesDisplay, fargs=(self.__img), blit=True, repeat=False)
+    def __startSceneUpdate(self):
+        self.__editAnim = FuncAnimation(self.canvas.figure, updateScenesDisplay, fargs=(self.__img, self.__gameOfLife), blit=True, repeat=False)
 
 
 class GameOfLifeCanvas(FigureCanvas):
@@ -229,6 +257,7 @@ def updateGrid(frame, img, game):
     matrix = game.getLogicalGrid()
     img.set_array(matrix)
     return img,
+
 
 def updateScenesDisplay(frame, img, game):
     matrix = game.getLogicalGridWithScenes()

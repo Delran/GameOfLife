@@ -11,7 +11,8 @@ from LifeNode import LifeNode
 # from LifeGameSceneViewer import LifeGameSceneViewer
 
 import defs
-import Utils
+# import Utils
+
 
 class LifeGameManager:
 
@@ -53,7 +54,7 @@ class LifeGameManager:
     # each generation.
     def getLogicalGrid(self):
         # Creating a zero matrix of type bools
-        matrix = np.zeros((self.__height, self.__length), dtype=bool)
+        matrix = np.zeros((self.__height, self.__length), dtype=float)
 
         # Commented here is an lambda made that made use of
         # the __forEachNode node functions to assign each node
@@ -69,7 +70,7 @@ class LifeGameManager:
             for j in range(self.__length):
                 matrix[i][j] = self.__grid[i][j].isAlive()
 
-        Utils.printMatrix(matrix)
+        # Utils.printMatrix(matrix)
 
         return matrix
 
@@ -80,7 +81,7 @@ class LifeGameManager:
         loadedScenes = self.__sceneManager.getLoadedScenes()
         for scene in loadedScenes:
             sceneMatrix = scene.getMatrix()
-            x,y = scene.getXY()
+            x, y = scene.getXY()
 
             shape = np.shape(sceneMatrix)
             sceneH = shape[0]
@@ -88,11 +89,17 @@ class LifeGameManager:
 
             for i in range(sceneH):
                 for j in range(sceneL):
-                    h = (i+x)%self.__height
-                    l = (j+x)%self.__length
-                    matrix[h][l] = sceneMatrix[i][j]
-
+                    H = (i+x) % self.__height
+                    L = (j+x) % self.__length
+                    matrix[H][L] = sceneMatrix[i][j]
         return matrix
+
+    def mergeScenes(self):
+
+        matrix = self.getLogicalGridWithScenes()
+        for i in range(self.__height):
+            for j in range(self.__length):
+                self.__grid[i][j].setAlive(matrix[i][j])
 
     def addScene(self, scene, x=0, y=0):
 
@@ -117,7 +124,7 @@ class LifeGameManager:
             for j in range(sceneLength):
                 node = self.__grid[i+y][j+x]
                 if scene[i][j] == defs.ALIVECHAR:
-                    node.setAlive()
+                    node.setAlive(True)
 
     def addPulsar(self, x=0, y=0):
         self.addScene("pulsar.del", x, y)

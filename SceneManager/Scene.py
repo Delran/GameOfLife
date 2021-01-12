@@ -3,12 +3,13 @@ from PyQt5.QtWidgets import QInputDialog
 
 from SceneManager.PatternReader.PatternFile import PatternFile
 
+
 # Inherit form QListWidgetItem to be used
 # as Items in directly in the GUI
 # This almost nullifies the need for a manager
 class Scene(QListWidgetItem):
 
-    def __init__(self, id, reader, name, x = 0, y = 0):
+    def __init__(self, id, reader, name, x=0, y=0):
         QListWidgetItem.__init__(self, name)
         if not isinstance(reader, PatternFile):
             raise TypeError("Instanciating scene with a patern not derived from PatternFile")
@@ -29,8 +30,12 @@ class Scene(QListWidgetItem):
         if ok:
             self.setText(self.__name)
 
-    def getXY():
+    def getXY(self):
         return self.__x, self.__y
+
+    def setXY(self, x, y):
+        self.__x = x
+        self.__y = y
 
     def getMatrix(self):
         return self.__pattern

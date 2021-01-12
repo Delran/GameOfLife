@@ -46,8 +46,8 @@ class LifeNode:
     def isAlive(self):
         return self.__alive
 
-    def setAlive(self):
-        self.__alive = True
+    def setAlive(self, alive):
+        self.__alive = alive
 
     def kill(self):
         self.__alive = False
