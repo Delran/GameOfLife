@@ -1,6 +1,9 @@
-from SceneManager.PatternReader.PatternFile import PatternFile
 import csv
+import numpy as np
 
+from SceneManager.PatternReader.PatternFile import PatternFile
+
+import Utils
 import defs
 
 
@@ -18,5 +21,10 @@ class LegacyFileReader(PatternFile):
                 for row in sceneReader:
                     self.pattern.append(row)
             csvfile.close()
+
+        self.height = len(self.pattern)
+        self.length = len(self.pattern[0])
+
+        self.pattern = Utils.gridToMatrix(self.pattern, self.height, self.length)
         return self.pattern
         # return self.pattern

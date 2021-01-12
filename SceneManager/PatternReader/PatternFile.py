@@ -17,11 +17,14 @@ class PatternFile(metaclass=ABCMeta):
     def __init__(self, _path, _id, _alive, _dead):
         self.__id = _id
         self.__path = _path
-        self.__ALIVE_CHAR = _alive 
+        self.__ALIVE_CHAR = _alive
         self.__DEAD_CHAR = _dead
         tokens = _path.split('/')
         tokens = tokens[-1].split('.')
         self.__name = tokens[0]
+
+        self.length = 0
+        self.height = 0
 
     def getPath(self):
         return self.__path

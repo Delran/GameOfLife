@@ -13,7 +13,7 @@ from LifeGameManager import LifeGameManager
 from SceneManager.SceneManager import SceneManager
 
 import defs
-
+import Utils
 
 matplotlib.use('Qt5Agg')
 
@@ -27,7 +27,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(self._main)
         layout = QtWidgets.QHBoxLayout(self._main)
 
-        self.canvas = GameOfLifeCanvas(self, defs.LENGTH, defs.HEIGHT)
+        self.__length = defs.LENGTH
+        self.__height = defs.HEIGHT
+
+        self.canvas = GameOfLifeCanvas(self, self.__length, self.__height)
 
         self.canvas.axes.axes.xaxis.set_visible(False)
         self.canvas.axes.axes.yaxis.set_visible(False)
@@ -38,7 +41,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Pass the scene manager to the game of life,
         # this is a temporary solution to allow addScene
         # function to continue to work with the new GUI
-        self.__gameOfLife = LifeGameManager(defs.LENGTH, defs.HEIGHT, self.__sceneManager)
+        self.__gameOfLife = LifeGameManager(self.__length, self.__height, self.__sceneManager)
         self.__gameOfLife.addGliderGun()
         self.__gameOfLife.addPulsar()
 
@@ -95,9 +98,11 @@ class MainWindow(QtWidgets.QMainWindow):
         coordLayout = QtWidgets.QHBoxLayout()
         self.__textEditX = QtWidgets.QLineEdit(self)
         self.__textEditX.setPlaceholderText("X coords")
+        self.__textEditX.setValidator(QtGui.QIntValidator(0, self.__length, self));
         coordLayout.addWidget(self.__textEditX)
         self.__textEditY = QtWidgets.QLineEdit(self)
         self.__textEditY.setPlaceholderText("Y coords")
+        self.__textEditY.setValidator(QtGui.QIntValidator(0, self.__height, self));
         coordLayout.addWidget(self.__textEditY)
         sceneEditLayout.addLayout(coordLayout)
 
@@ -128,14 +133,34 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __addSceneCallback(self):
         sceneId = self.__sceneBox.currentIndex()
-        scene = self.__sceneManager.createScene(sceneId)
+        x,y = self.__getSceneXY()
+        scene = self.__sceneManager.createScene(sceneId,x,y)
+        Utils.printMatrix(scene.getMatrix())
         self.__sceneList.addItem(scene)
         # self.__updateSceneList()
+
+    def __getSceneXY(self):
+
+        x = 0
+        xStr = self.__textEditX.text()
+        if xStr:
+            x = int(xStr)
+            x = 0 if x < 0 or x > self.__length else x
+
+        y = 0
+        yStr = self.__textEditY.text()
+        if yStr:
+            y = int(yStr)
+            y = 0 if y < 0 or y > self.__height else y
+
+        return x,y
 
     # Empty function for signal tests
     def __doNothing(self):
         pass
 
+    # Context menu function for right clikcs on
+    # the loaded scene menu
     def __sceneListMenu(self):
         # Get global position of the mouse
         globalCoords = QtGui.QCursor.pos()
@@ -146,10 +171,12 @@ class MainWindow(QtWidgets.QMainWindow):
         # If we clicked an item, show the menu at coords
         if selected:
             rightMenu = QtWidgets.QMenu("Choose")
-            # self.__sceneList.removeItemWidget(QtWidgets.QListWidgetItem(selected))
-            # self.__sceneList.takeItem(0)
-            fn = lambda: self.__sceneList.takeItem(self.__sceneList.currentRow())
-            removeAction = QtWidgets.QAction("Delete", self, triggered = fn)
+            # Function removeWidgetItem doesn't seems to work in PyQt
+            def fnFunc():
+                item = self.__sceneList.takeItem(self.__sceneList.currentRow())
+                self.__sceneManager.deleteScene(item)
+
+            removeAction = QtWidgets.QAction("Delete", self, triggered = fnFunc)
             rightMenu.addAction(removeAction)
 
             addAction = QtWidgets.QAction("Rename", self, triggered = selected.rename) # define objects can be specified from the event
@@ -169,12 +196,15 @@ class MainWindow(QtWidgets.QMainWindow):
             self.__sceneList.addItem(scene)
     '''
 
+    # TODO : Merge theses two buttons into one
+    # Callback for Play/Resume button
     def __launchAnimCallback(self):
         # Stat the matplotlib animation
         self.anim = FuncAnimation(self.canvas.figure, updateGrid, fargs=(self.__img, self.__gameOfLife), blit=True, interval=200)
         self.__stopButton.setEnabled(True)
         self.__startButton.setEnabled(False)
 
+    # Callback for Pause button
     def __stopAnimCallback(self):
         self.__stopButton.setEnabled(False)
         self.__startButton.setEnabled(True)

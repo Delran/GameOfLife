@@ -11,7 +11,7 @@ from LifeNode import LifeNode
 # from LifeGameSceneViewer import LifeGameSceneViewer
 
 import defs
-
+import Utils
 
 class LifeGameManager:
 
@@ -53,7 +53,7 @@ class LifeGameManager:
     # each generation.
     def getLogicalGrid(self):
         # Creating a zero matrix of type bools
-        matrix = np.ones((self.__height, self.__length), dtype=bool)
+        matrix = np.zeros((self.__height, self.__length), dtype=bool)
 
         # Commented here is an lambda made that made use of
         # the __forEachNode node functions to assign each node
@@ -68,6 +68,20 @@ class LifeGameManager:
         for i in range(self.__height):
             for j in range(self.__length):
                 matrix[i][j] = self.__grid[i][j].isAlive()
+
+        Utils.printMatrix(matrix)
+
+        return matrix
+
+    # Add scenes loaded to a temporary display grid
+    def getLogicalGridWithScenes(self):
+        matrix = self.getLogicalGrid()
+
+        loadedScenes = self.__sceneManager.getLoadedScenes()
+        for scene in loadedScenes:
+            for x in scene:
+                for y in scene:
+                    pass
 
         return matrix
 

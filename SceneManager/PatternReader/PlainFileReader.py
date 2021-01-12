@@ -1,7 +1,7 @@
 from SceneManager.PatternReader.PatternFile import PatternFile
 
 import defs
-
+import Utils
 
 class PlainFileReader(PatternFile):
 
@@ -9,6 +9,8 @@ class PlainFileReader(PatternFile):
         super(PlainFileReader, self).__init__(_path, _id, 'O', '.')
 
     # TODO: only read once, change function name ?
+    # TODO: if is tested in every child class,
+    # move to super ?
     def read(self):
         if self.pattern is None:
             self.pattern = []
@@ -38,4 +40,7 @@ class PlainFileReader(PatternFile):
                     for i in range(len(row), maxLength-1):
                         row.append(defs.DEADCHAR)
 
+        self.height = len(self.pattern)
+        self.length = len(self.pattern[0])
+        self.pattern = Utils.gridToMatrix(self.pattern, self.height, self.length)
         return self.pattern

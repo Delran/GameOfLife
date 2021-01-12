@@ -32,6 +32,8 @@ class SceneManager:
         # recursively get all files with handled extensions
         self.__exploreDir(_path)
 
+        self.__id = 0
+
     # Recursive function to explore all dirs at given path
     def __exploreDir(self, _path):
         files = os.listdir(_path)
@@ -57,18 +59,25 @@ class SceneManager:
                     continue
                 self.__patternFiles.append(reader)
 
-    def createScene(self, id):
+    def createScene(self, id, x, y):
         pattern = self.__patternFiles[id]
-        scene = Scene(self.__patternFiles[id], pattern.getName())
-        # No need to keep a reference ?
-        # self.__loadedScenes.append(scene)
+        scene = Scene(self.__id, self.__patternFiles[id], pattern.getName(), x, y)
+        self.__loadedScenes.append(scene)
+        self.__id += 1
         return scene
 
-    '''
-    Useless ?
+    def deleteScene(self, scene):
+        self.__loadedScenes.remove(scene)
+        # return
+        # for i in range(len(list)):
+        #     if list[i].getId() == id:
+        #         print(i)
+        #         #list.remove(i)
+        #         break
+
+
     def getLoadedScenes(self):
         return self.__loadedScenes
-    '''
 
     # Need for a delete scene function ?
 

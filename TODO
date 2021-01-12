@@ -16,8 +16,6 @@ Game of Life:
   Show number of generations
 
 Scene:
-  A scene should be a class of its own
-
   Added scene shouldn't be added to the logical grid immediately,
   they should be loaded, toyed with and only logically added at the
   start of the game

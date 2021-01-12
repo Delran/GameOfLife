@@ -22,11 +22,16 @@ class RLEFileReader(PatternFile):
                 length = int(headers[0][2:])
                 height = int(headers[1][2:])
 
-                for y in range(height):
-                    row = []
-                    for x in range(length):
-                        row.append(defs.DEADCHAR)
-                    self.pattern.append(row)
+                self.length = length
+                self.height = height
+
+                # for y in range(height):
+                #     row = []
+                #     for x in range(length):
+                #         row.append(defs.DEADCHAR)
+                #     self.pattern.append(row)
+
+                self.pattern = np.zeros((height, length), dtype=bool)
 
                 # TODO: Parse the pattern's rules
                 full = ""
@@ -50,21 +55,23 @@ class RLEFileReader(PatternFile):
                             x = 0
                         strInt = "0"
                     elif char == self.aliveChar():
-                        print(strInt)
+                        # print(strInt)
                         toAdd = int(strInt)
                         toAdd = 1 if toAdd == 0 else toAdd
                         for j in range(toAdd):
-                            print("y : {}, x :   {}".format(y,x))
-                            self.pattern[y][x] = defs.ALIVECHAR
+                            # print("y : {}, x :   {}".format(y,x))
+                            # self.pattern[y][x] = defs.ALIVECHAR
+                            self.pattern[y][x] = True
                             x+=1
                         strInt = "0"
                     elif char == self.deadChar():
-                        print(strInt)
+                        # print(strInt)
                         toAdd = int(strInt)
                         toAdd = 1 if toAdd == 0 else toAdd
                         for j in range(toAdd):
-                            print("y : {}, x : {}".format(y,x))
-                            self.pattern[y][x] = defs.DEADCHAR
+                            # print("y : {}, x : {}".format(y,x))
+                            # self.pattern[y][x] = defs.DEADCHAR
+                            self.pattern[y][x] = False
                             x+=1
                         strInt = "0"
                     else:
