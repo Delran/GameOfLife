@@ -41,9 +41,6 @@ How to use :
 
 Limitations :
 
-    GUI:
-        The grid cannot be resized at runtime
-
     Edit Mode:
         The use of matplotlib FuncAnimation makes that the view doesn't update in real time
         this result in a few ms of lag between input from user and refresh on the game

@@ -20,12 +20,11 @@ class SceneManager:
 
     __sceneFolderPath = ""
 
-    def __init__(self, _path, length, height):
+    def __init__(self, _path, game):
         if not path.isdir(_path):
             raise "Cannot find specified folder for scenes path"
 
-        self.__length = length
-        self.__height = height
+        self.__game = game
 
         if _path[-1] != '/':
             _path += '/'
@@ -114,9 +113,14 @@ class SceneManager:
     def moveCurrent(self, vec2):
         scene = self.__sceneWidget.currentItem()
         x, y = scene.getXY()
-        x = (x + vec2[0]) % self.__length
-        y = (y + vec2[1]) % self.__height
+        dimensions = self.__game.getGameDimensions()
+        x = (x + vec2[0]) % dimensions[0]
+        y = (y + vec2[1]) % dimensions[1]
         scene.setXY(x, y)
+
+    def setXYCurrent(self):
+        dimensions = self.__game.getGameDimensions()
+        self.__sceneWidget.currentItem().askXY(dimensions[0], dimensions[1])
 
     def clear(self):
         self.__sceneWidget.clear()

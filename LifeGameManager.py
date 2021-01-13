@@ -29,13 +29,25 @@ class LifeGameManager:
 
     anim = None
 
-    def __init__(self, length, height, sceneManager):
+    def __init__(self):
 
+        self.__length = defs.LENGTH
+        self.__height = defs.HEIGHT
+        self.__createGrid()
+
+    def setSceneManager(self, sceneManager):
         self.__sceneManager = sceneManager
-        self.__createGrid(length, height)
+
+    def changeGameSize(self, length, height):
+        self.__length = length
+        self.__height = height
+        self.__createGrid()
 
     def updateGrid(self):
         self.__cycle()
+
+    def getGameDimensions(self):
+        return self.__length, self.__height
 
     # Cycling, wait for a bit, compute and update every cells
     # in the game's grid
@@ -91,13 +103,16 @@ class LifeGameManager:
             sceneH = shape[0]
             sceneL = shape[1]
 
+            halfH = int(sceneH/2)
+            halfL = int(sceneL/2)
+
             for i in range(sceneH):
                 for j in range(sceneL):
                     value = sceneMatrix[i][j]
                     if not value:
                         continue
-                    H = (i+y) % self.__height
-                    L = (j+x) % self.__length
+                    H = (i+y-halfH) % self.__height
+                    L = (j+x-halfL) % self.__length
                     # If this is the selected item, change the value
                     # of the cell, this will change the color in which
                     # the cells are displayed
@@ -114,13 +129,7 @@ class LifeGameManager:
             for j in range(self.__length):
                 self.__grid[i][j].setAlive(matrix[i][j])
 
-    def __createGrid(self, length, height):
-
-        # Encapsulating length and height init
-        # at grid creation, this is the only
-        # time these params should be modified
-        self.__length = length
-        self.__height = height
+    def __createGrid(self):
 
         self.__area = self.__length * self.__height
 

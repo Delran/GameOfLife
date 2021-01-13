@@ -22,6 +22,7 @@ class PatternFile(metaclass=ABCMeta):
         tokens = _path.split('/')
         tokens = tokens[-1].split('.')
         self.__name = tokens[0]
+        self.__fileName = tokens[0]
 
         self.__desc = ""
 
@@ -36,6 +37,9 @@ class PatternFile(metaclass=ABCMeta):
 
     def getName(self):
         return self.__name
+
+    def getFileName(self):
+        return self.__fileName
 
     def _setName(self, name):
         if name is not None:
