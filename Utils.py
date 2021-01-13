@@ -12,6 +12,18 @@ def gridToMatrix(grid, height, length):
 
     return matrix
 
+def matrixToLegacy(matrix):
+    dim = np.shape(matrix)
+    grid = []
+    for i in range(dim[0]):
+        row = []
+        for j in range(dim[1]):
+            char = defs.ALIVECHAR if matrix[i][j] else defs.DEADCHAR
+            row.append(char)
+        grid.append(row)
+
+    return grid
+
 def printGrid(grid):
     for i in range(len(grid)):
         row = []

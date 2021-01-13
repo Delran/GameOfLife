@@ -7,11 +7,13 @@ from SceneManager.PatternReader.RLEFileReader import RLEFileReader
 from SceneManager.PatternReader.LegacyFileReader import LegacyFileReader
 from SceneManager.Scene import Scene
 
+import Utils
 
 # TODO: dictionnary of handled extentions with lambda constructors ?
 class SceneManager:
 
     __patternFiles = []
+    __loadedFiles = []
     __loadedScenes = []
 
     RLE_EXT = ".rle"
@@ -31,15 +33,14 @@ class SceneManager:
         self.__sceneFolderPath = _path
         self.__scenes = os.listdir(self.__sceneFolderPath)
 
-        # recursively get all files with handled extensions
-        self.__exploreDir(_path)
-
         self.__sceneGUID = 0
 
     # Recursive function to explore all dirs at given path
     def __exploreDir(self, _path):
         files = os.listdir(_path)
         for file in files:
+            if file in self.__loadedFiles:
+                continue
             fpath = _path + file
             if os.path.isdir(fpath):
                 # Calls itself if the file is a directory
@@ -59,6 +60,7 @@ class SceneManager:
                 # If the extention is not recognized, do just continue
                 else:
                     continue
+                self.__loadedFiles.append(file)
                 self.__patternFiles.append(reader)
 
     def createSceneFromName(self, str):
@@ -87,6 +89,7 @@ class SceneManager:
     def rotateCounterCurrent(self):
         self.rotateCurrent(True)
 
+
     def rotateCurrent(self, direction):
         currentScene = self.__sceneWidget.currentItem()
         if direction:
@@ -94,12 +97,19 @@ class SceneManager:
         else:
             currentScene.rotateSceneClockwise()
 
+    def duplicateCurrent(self):
+        toDup = self.__sceneWidget.currentItem()
+        scene = toDup.createCopy(self.__sceneGUID)
+        self.__sceneCreated(scene)
+
     def createScene(self, id, x, y):
         pattern = self.__patternFiles[id]
         scene = Scene(self.__sceneGUID, pattern, x, y)
-        self.__loadedScenes.append(scene)
-        self.__sceneGUID += 1
+        self.__sceneCreated(scene)
 
+    def __sceneCreated(self, scene):
+        self.__sceneGUID += 1
+        self.__loadedScenes.append(scene)
         self.__sceneWidget.addItem(scene)
         self.__sceneWidget.setCurrentItem(scene)
 
@@ -148,10 +158,14 @@ class SceneManager:
     def setScenesWidget(self, widget):
         self.__sceneWidget = widget
 
-    def getScenes(self):
+    def loadScenes(self, path=None):
+        # recursively get all files with handled extensions
+        p = self.__sceneFolderPath if path is None else path
+        self.__exploreDir(p)
         return self.__patternFiles
 
-    def saveScene(self, grid, sceneName):
+    def saveScene(self, matrix, sceneName):
+        grid = Utils.matrixToLegacy(matrix)
         with open(self.__getFullPath(sceneName), 'w', newline='') as csvfile:
             sceneWriter = csv.writer(csvfile, quoting=csv.QUOTE_NONE)
             for i in range(len(grid)):

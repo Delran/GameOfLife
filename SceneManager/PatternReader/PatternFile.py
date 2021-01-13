@@ -20,9 +20,9 @@ class PatternFile(metaclass=ABCMeta):
         self.__ALIVE_CHAR = _alive
         self.__DEAD_CHAR = _dead
         tokens = _path.split('/')
+        self.__fileName = tokens[-1]
         tokens = tokens[-1].split('.')
         self.__name = tokens[0]
-        self.__fileName = tokens[0]
 
         self.__desc = ""
 

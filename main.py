@@ -12,10 +12,11 @@ from matplotlib.animation import FuncAnimation
 from LifeGameManager import LifeGameManager
 from SceneManager.SceneManager import SceneManager
 
-import defs
+# import defs
 # import Utils
 
 matplotlib.use('Qt5Agg')
+
 
 # TODO : Move to class file, avoid poluting main
 class MainWindow(QtWidgets.QMainWindow):
@@ -57,10 +58,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Scene combobox
         self.__sceneBox = QtWidgets.QComboBox(self._main)
 
-        scenes = self.__sceneManager.getScenes()
-
-        for scene in scenes:
-            self.__sceneBox.addItem(scene.getFileName())
+        self.__loadSceneBox()
 
         sceneEditLayout.addWidget(self.__sceneBox)
         # Scene informations
@@ -135,8 +133,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.__flushButton.setFixedWidth(120)
         self.__flushButton.setMinimumHeight(30)
         self.__flushButton.clicked.connect(self.__confirmFlush)
-        flushLayout = QtWidgets.QVBoxLayout()
+        self.__randomizeButton = QtWidgets.QPushButton("Randomize", self._main)
+        self.__randomizeButton.setFixedWidth(120)
+        self.__randomizeButton.setMinimumHeight(30)
+        self.__randomizeButton.clicked.connect(self.__confirmRandomize)
+        self.__saveButton = QtWidgets.QPushButton("Save", self._main)
+        self.__saveButton.setFixedWidth(120)
+        self.__saveButton.setMinimumHeight(30)
+        self.__saveButton.clicked.connect(self.__confirmSave)
+        flushLayout = QtWidgets.QHBoxLayout()
         flushLayout.addWidget(self.__flushButton)
+        flushLayout.addWidget(self.__randomizeButton)
+        flushLayout.addWidget(self.__saveButton)
         flushLayout.setAlignment(Qt.AlignCenter)
         animLayout.setAlignment(Qt.AlignCenter)
         gameLayout = QtWidgets.QVBoxLayout()
@@ -177,7 +185,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # empty matrix result in animations functions
         # doing nothing, we set one cell alive on the
         # display grid to start the animations
-        matrix[0][0]=True
+        matrix[0][0] = True
 
         self.__img = self.canvas.axes.imshow(matrix, interpolation='None', cmap='viridis', aspect='equal')
 
@@ -186,23 +194,22 @@ class MainWindow(QtWidgets.QMainWindow):
         # Launch the scenes edit mode animation
         self.__startSceneUpdate()
 
+    def __loadSceneBox(self):
+        scenes = self.__sceneManager.loadScenes()
+
+        self.__sceneBox.clear()
+        for scene in scenes:
+            self.__sceneBox.addItem(scene.getFileName())
+
     def __confirmFlush(self):
-        confirm = QtWidgets.QMessageBox(self)
-        qtStdYes = QtWidgets.QMessageBox.Yes
-        confirm.setStandardButtons(qtStdYes |
-            QtWidgets.QMessageBox.Cancel)
-        confirm.setDefaultButton(qtStdYes)
-        confirm.setText("Flushing Game of life's grid.")
-        confirm.setInformativeText("The state of the grid will be lost")
-        # Show the window before exec to get it's size
-        confirm.show()
-        halfWidth = int(confirm.width()/2)
-        halfHeight = int(confirm.height()/2)
-        half = QtCore.QPoint(halfWidth, halfHeight)
-        confirm.move(QtGui.QCursor.pos() - half)
-        ret = confirm.exec()
-        if ret == qtStdYes:
-            self.__gameOfLife.flush()
+        title = "Flushing Game of life's grid."
+        msg = "The state of the grid will be lost"
+        confirmMessage(title, msg, self.__gameOfLife.flush, self)
+
+    def __confirmRandomize(self):
+        title = "Do you really want to generate a random grid ?"
+        msg = "The state of the grid will be lost"
+        confirmMessage(title, msg, self.__gameOfLife.randomize, self)
 
     def __addSceneCallback(self):
         sceneId = self.__sceneBox.currentIndex()
@@ -257,22 +264,26 @@ class MainWindow(QtWidgets.QMainWindow):
         if selected:
             rightMenu = QtWidgets.QMenu("Choose")
 
-            setCoords = QtWidgets.QAction("Set coordinates",
-                self, triggered=self.__sceneManager.setXYCurrent)
-            removeAction = QtWidgets.QAction("Delete (Suppr)",
-                self, triggered=self.__sceneManager.deleteCurrentScene)
-            addAction = QtWidgets.QAction("Rename (F2)",
-                self, triggered=self.__sceneManager.renameCurrentScene)
-            rotateClock = QtWidgets.QAction("Rotate counter (A)",
-                self, triggered=self.__sceneManager.rotateCounterCurrent)
-            rotateCounter = QtWidgets.QAction("Rotate clockwise (E)",
-                self, triggered=self.__sceneManager.rotateClockwiseCurrent)
-            flipHor = QtWidgets.QAction("Flip horizontal (W)",
-                self, triggered=self.__sceneManager.flipHorizontalCurrent)
-            flipVer = QtWidgets.QAction("Flip vertical (C)",
-                self, triggered=self.__sceneManager.flipVerticalCurrent)
+            # Really pycodestyle, REALLY ? you think THIS is a good practice ?
+            setCoords = QtWidgets.QAction("Set coordinates", self,
+                                          triggered=self.__sceneManager.setXYCurrent)
+            duplicateAction = QtWidgets.QAction("Duplicate (Ctrl+D)", self,
+                                                triggered=self.__sceneManager.duplicateCurrent)
+            removeAction = QtWidgets.QAction("Delete (Suppr)", self,
+                                             triggered=self.__sceneManager.deleteCurrentScene)
+            addAction = QtWidgets.QAction("Rename (F2)", self,
+                                          triggered=self.__sceneManager.renameCurrentScene)
+            rotateClock = QtWidgets.QAction("Rotate counter (A)", self,
+                                            triggered=self.__sceneManager.rotateCounterCurrent)
+            rotateCounter = QtWidgets.QAction("Rotate clockwise (E)", self,
+                                              triggered=self.__sceneManager.rotateClockwiseCurrent)
+            flipHor = QtWidgets.QAction("Flip horizontal (W)", self,
+                                        triggered=self.__sceneManager.flipHorizontalCurrent)
+            flipVer = QtWidgets.QAction("Flip vertical (C)", self,
+                                        triggered=self.__sceneManager.flipVerticalCurrent)
 
             rightMenu.addAction(setCoords)
+            rightMenu.addAction(duplicateAction)
             rightMenu.addAction(removeAction)
             rightMenu.addAction(addAction)
             rightMenu.addAction(rotateClock)
@@ -289,7 +300,12 @@ class MainWindow(QtWidgets.QMainWindow):
         if object == self.__loadedSceneList:
             if event.type() == QtCore.QEvent.KeyPress:
                 key = event.key()
-                if key == Qt.Key_Left or key == Qt.Key_Q:
+
+                duplicateKey = QtGui.QKeySequence("Ctrl+D")
+                if (event.modifiers() & Qt.ControlModifier) and key == Qt.Key_D:
+                    self.__sceneManager.duplicateCurrent()
+                    return True
+                elif key == Qt.Key_Left or key == Qt.Key_Q:
                     self.__sceneManager.moveCurrent((-1,0))
                     return True
                 elif key == Qt.Key_Right or key == Qt.Key_D:
@@ -319,26 +335,67 @@ class MainWindow(QtWidgets.QMainWindow):
 
         return False
 
+    def __confirmSave(self):
+        dialog = QtWidgets.QDialog()
+        dialog.setWindowTitle("Save scene")
+        dialogLayout = QtWidgets.QVBoxLayout()
+        mainLayout = QtWidgets.QHBoxLayout()
+        nameLayout = QtWidgets.QVBoxLayout()
+        editName = QtWidgets.QLineEdit(dialog)
+        editName.setPlaceholderText("File name")
+        nameLayout.addWidget(editName)
+        mainLayout.addLayout(nameLayout)
+        dialogLayout.addLayout(mainLayout)
+        saveButton = QtWidgets.QPushButton("Save", dialog)
+        cancelButton = QtWidgets.QPushButton("Cancel", dialog)
+        buttonLayout = QtWidgets.QHBoxLayout()
+        buttonLayout.addWidget(cancelButton)
+        buttonLayout.addWidget(saveButton)
+        dialogLayout.addLayout(buttonLayout)
+        dialog.setLayout(dialogLayout)
+
+        def acceptFunction():
+            if editName.text():
+                dialog.accept()
+            else:
+                editName.setPlaceholderText("REQUIRED")
+
+        saveButton.clicked.connect(acceptFunction)
+        cancelButton.clicked.connect(dialog.reject)
+        # Show the dialog before excec to get it's size
+        ret = dialog.exec_()
+        if ret == QtWidgets.QDialog.Accepted:
+            str = editName.text()
+            self.__sceneManager.saveScene(self.__gameOfLife.getLogicalGridWithScenes(), str+".del")
+            self.__loadSceneBox()
+
     __playing = False
     # TODO : Merge theses two buttons into one
     # Callback for Play/Resume button
     def __animCallback(self):
         # Stat the matplotlib animation
+        self.__toggleSceneButtons()
         if not self.__playing:
-            self.__flushButton.setEnabled(False)
             self.__playing = True
             self.__animButton.setText("Pause")
-            self.__anim = FuncAnimation(self.canvas.figure, updateGrid, fargs=(self.__img, self.__gameOfLife), blit=True, interval=200)
             self.__editAnim._stop()
+            self.__anim = FuncAnimation(self.canvas.figure, updateGrid, fargs=(self.__img, self.__gameOfLife), blit=True, interval=200)
         else :
-            self.__flushButton.setEnabled(True)
             self.__playing = False
             self.__animButton.setText("Resume")
             self.__anim._stop()
             self.__startSceneUpdate()
 
+    def __toggleSceneButtons(self):
+        enabled = self.__flushButton.isEnabled()
+        self.__flushButton.setEnabled(not enabled)
+        self.__randomizeButton.setEnabled(not enabled)
+        self.__saveButton.setEnabled(not enabled)
+
+
     def __startSceneUpdate(self):
         self.__editAnim = FuncAnimation(self.canvas.figure, updateScenesDisplay, fargs=(self.__img, self.__gameOfLife), interval=50)
+        self.__editAnim._start()
 
     # Empty function for Qt signals tests
     def __doNothing(self):
@@ -365,6 +422,23 @@ def updateScenesDisplay(frame, img, game):
     img.set_array(matrix)
     return img,
 
+def confirmMessage(title, msg, fn, parent):
+    confirm = QtWidgets.QMessageBox(parent)
+    qtStdYes = QtWidgets.QMessageBox.Yes
+    confirm.setStandardButtons(qtStdYes |
+        QtWidgets.QMessageBox.Cancel)
+    confirm.setDefaultButton(qtStdYes)
+    confirm.setText(title)
+    confirm.setInformativeText(msg)
+    # Show the window before exec to get it's size
+    confirm.show()
+    halfWidth = int(confirm.width()/2)
+    halfHeight = int(confirm.height()/2)
+    half = QtCore.QPoint(halfWidth, halfHeight)
+    confirm.move(QtGui.QCursor.pos() - half)
+    ret = confirm.exec()
+    if ret == qtStdYes:
+        fn()
 
 if __name__ == "__main__":
     qApp = QtWidgets.QApplication(sys.argv)

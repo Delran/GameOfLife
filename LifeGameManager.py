@@ -1,6 +1,7 @@
 # import curses
 # from curses import wrapper
 
+import random
 import numpy as np
 
 from LifeNode import LifeNode
@@ -57,6 +58,9 @@ class LifeGameManager:
 
     def flush(self):
         self.__forEachNode(lambda i, j: self.__grid[i][j].setAlive(False))
+
+    def randomize(self):
+        self.__forEachNode(lambda i, j: self.__grid[i][j].setAlive(random.randint(0, 100) > 80))
 
     # This function was added to provide support between the logical
     # grid and the matplotlib matrix,

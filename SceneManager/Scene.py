@@ -14,12 +14,15 @@ import defs
 # This almost nullifies the need for a manager
 class Scene(QListWidgetItem):
 
-    def __init__(self, id, reader, x=0, y=0):
+    def __init__(self, id, reader, x=0, y=0, pattern = None):
         if not isinstance(reader, PatternFile):
             raise TypeError("Instanciating scene with a patern not derived from PatternFile")
 
         self.__reader = reader
-        self.__pattern = self.__reader.read()
+        if pattern is None:
+            self.__pattern = self.__reader.read()
+        else:
+            self.__pattern = pattern
         self.__name = self.__reader.getName()
         QListWidgetItem.__init__(self, self.__name)
 
@@ -31,6 +34,9 @@ class Scene(QListWidgetItem):
 
     def getName(self):
         return self.__name
+
+    def createCopy(self, id):
+        return Scene(id, self.__reader, self.__x, self.__y, self.__pattern)
 
     def rename(self):
         self.__name, ok = QInputDialog.getText(None, "Renaming " + self.__name, "Enter new name")

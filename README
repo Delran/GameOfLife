@@ -28,7 +28,8 @@ How to use :
       You can select any added scene with the given list, and move them with the ZQSD or arrow keys
       F2 to rename the scene and Suppr to delete it, you can also right click on them to show a context menu
       You can use the keys A and E to rotate it counter clockwise and clockwise respectively
-      You can use the keys W and C to flip it horizontally and vertically respectively
+      W and C to flip it horizontally and vertically respectively
+      Ctrl+D to duplicate
 
       Scene are loaded from top to bottom, you can reorder them with drag and drop
       ( Scenes only override living cell so this feature is not that useful )
@@ -36,7 +37,7 @@ How to use :
       You must press the Merge scene button to add your scenes to the game, once merged
       a scene cannot be interacted with anymore and will be removed from the scene list
 
-      If you start the game without merging the scene, they will disappear while the game is running and
+      If you start the game without merging the scenes, they will disappear while the game is running and
       reappear the next time you press the pause button.
 
 Limitations :
@@ -47,5 +48,6 @@ Limitations :
 
 Future :
 
-    Edit mode
+    Paint mode
+    Drag pattern with mouse
     Integration of .life format

@@ -1,21 +1,17 @@
 GUI :
-  Add save scene GUI
-  Add edit mode
-  Add flush button
-  Add rotate and flip to GUI scenes
-
-  Qt :
-      Wrap layouts inside Widgets to have better control over
-      the GUI size
-
-  Edit mode:
-    Edit scene with mouse
-    Save scene
+    Edit mode:
+        Paint scene
+        Move scene with mouse
+        Save with scenes
+        Merge selected scenes into one
 
 Game of Life:
-  Show number of generations
+    Show number of generations
 
 Scene:
-  Should have a pointer on a scene that can be rotated
+
+Code:
+    Stop making use of matrix conversion function,
+    refactorize every grid made with python list with numpy array
 
 Bugs:
