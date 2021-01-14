@@ -430,7 +430,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if ret == QtWidgets.QDialog.Accepted:
             str = editName.text()
             if checkSaveScenes.checkState() == Qt.CheckState.Checked:
-                pattern = self.__gameOfLife.getLogicalGridWithScenes()
+                pattern = self.__gameOfLife.getLogicalGridWithScenes(False)
             else:
                 pattern = self.__gameOfLife.getLogicalGrid()
             self.__sceneManager.saveScene(pattern, str+".del")

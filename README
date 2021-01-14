@@ -1,6 +1,8 @@
 Implementation of Conway's Game of life using Python PyQt and Matplotlib.
 
-Features :
+----------------------------------------------------------------------------------------------
+--------------------------------------- FEATURE ----------------------------------------------
+----------------------------------------------------------------------------------------------
 
     GUI:
         The Game of life can be paused and resumed at any time
@@ -18,19 +20,50 @@ Features :
             Run length Encoded : .rle
         Anything filename that is not terminated with a supported extension will be ignored
 
-How to use :
-      You can start and pause the game at any time with the dedicated buttons
-      Any file with the .rle or .cells extension located in the subfolder "Scenes"
-  will be loaded into the combobox at the top left of the screen
 
-      You can choose anyone of them and click the "Add scene" button,
-  you can also specify a set of coordinates where the scene will be added.
+----------------------------------------------------------------------------------------------
+------------------------------------- HOW TO USE ---------------------------------------------
+  --------------------------------------------------------------------------------------------
+  GAME'S GUI  --------------------------------------------------------------------------------
 
-      You can select any added scene with the given list, and move them with the ZQSD or arrow keys
+      You can start the game and pause it with the Start button.
+
+      You can add and edit any number of scenes directly loaded from the Scenes folder ( see below )
+
+      The Fush button will discard everything on the game's grid, it will not touch the scenes that
+  were not yet added to the grid.
+      The Save button saves the current state of the game's grid to a file with the given name, an
+  additional checkbox ask for also saving the loaded grids.
+      The randomize button WILL DISCARD the grid's state and randomize the cells on the grid, it will
+  not touch the loaded scenes.
+
+      The game's grid is resizable in the right panel of the screen
+      WARNING : RESIZING THE GRID WILL DISCARD EVERYTHING, ANY LOADED SCENE WILL BE FLUSHED FROM THE
+  LOADED SCENE LIST.
+
+  ---------------------------------------------------------------------------------------------
+  SCENES LOADING & EDITING --------------------------------------------------------------------
+
+      FOR ANY OF THIS TO WORK, YOU HAVE TO SELECT A SCENE IN THE LOADED SCENE LIST,
+      SHORTCUTS AND MOUSE INPUTS WILL NOT BE TAKEN IN ACCOUNT IF THE FOCUS IS NOT
+      ON THE LOADED SCENES LIST
+
+      SCENES ARE INDEPENDANTS AND ARE NOT ADDED TO THE GAME'S GRID UNTIL YOU PRESS
+      THE "MERGE SCENES" BUTTON, THERE ARE NOT LOST IF YOU LAUNCH THE GAME BEFORE
+      MERGING
+
+      You can select any added scene with the given list, and move them with the ZQSD kes, arrow keys or by
+  clicking or dragging directly on the Game of life
       F2 to rename the scene and Suppr to delete it, you can also right click on them to show a context menu
       You can use the keys A and E to rotate it counter clockwise and clockwise respectively
       W and C to flip it horizontally and vertically respectively
       Ctrl+D to duplicate
+
+      Most of those shortcuts can also be acceded by right clicking any of the scenes in the loaded scene menu
+
+      You can right click on the Game's grid and select one of two option :
+          - Add scene here : this will create the selected scene at mouse position
+          - Duplicate here : this will duplicate the selected scene at mouse position ( keep orientation )
 
       Scene are loaded from top to bottom, you can reorder them with drag and drop
       ( Scenes only override living cell so this feature is not that useful )
@@ -41,9 +74,15 @@ How to use :
       If you start the game without merging the scenes, they will disappear while the game is running and
       reappear the next time you press the pause button.
 
-      You can add a Paint Scene with de designated button, when a paint scene is selected clicking on the
-      scene will paint on the scene,
-      You can use the mouse middle button to erase
+  ---------------------------------------------------------------------------------------------
+  PAINT MODE ----------------------------------------------------------------------------------
+
+      Paint scenes are scene that do not behave like any other scene,
+      You can add one by clicking the Add paint scene button below the add scene button
+
+      Paint scenes cannot be moved with the mouse but can be moved with ZQSD or by right clicking on them
+
+      You can use the Right button to paint and the middle mouse to erase
 
 Limitations :
 
@@ -53,6 +92,4 @@ Limitations :
 
 Future :
 
-    Paint mode
-    Drag pattern with mouse
     Integration of .life format
