@@ -458,6 +458,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.__flushButton.setEnabled(not enabled)
         self.__randomizeButton.setEnabled(not enabled)
         self.__saveButton.setEnabled(not enabled)
+        self.__resizeButton.setEnabled(not enabled)
+        self.__sceneMergeButton.setEnabled(not enabled)
 
     def __startSceneUpdate(self):
         self.__editAnim = FuncAnimation(self.canvas.figure, updateScenesDisplay, fargs=(self.__img, self.__gameOfLife), interval=50)
