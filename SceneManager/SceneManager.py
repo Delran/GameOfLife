@@ -199,6 +199,8 @@ class SceneManager:
         return self.__patternFiles
 
     def saveScene(self, matrix, sceneName):
+        if not matrix.any():
+            return
         grid = Utils.matrixToLegacy(matrix)
         with open(self.__getFullPath(sceneName), 'w', newline='') as csvfile:
             sceneWriter = csv.writer(csvfile, quoting=csv.QUOTE_NONE)

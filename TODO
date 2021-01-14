@@ -15,5 +15,3 @@ Code:
     refactorize every grid made with python list with numpy array
 
 Bugs:
-
-    Moving paint scenes cause them to not paint at the right spot

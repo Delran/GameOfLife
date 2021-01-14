@@ -339,6 +339,9 @@ class MainWindow(QtWidgets.QMainWindow):
             y = int(y)
             if event.button == 3:
                 self.__plotMenu(x, y)
+            else:
+                if self.__loadedSceneList.hasFocus():
+                    self.__sceneManager.clickEventCurrent(x, y, event.button)
 
     def __onPlotHold(self, event):
         x, y = event.xdata, event.ydata
@@ -395,15 +398,22 @@ class MainWindow(QtWidgets.QMainWindow):
         mainLayout = QtWidgets.QHBoxLayout()
         nameLayout = QtWidgets.QVBoxLayout()
         editName = QtWidgets.QLineEdit(dialog)
+        saveSceneLayout = QtWidgets.QHBoxLayout()
+        checkSaveScenes = QtWidgets.QCheckBox(dialog)
+        checkSaveScenes.setCheckState(Qt.CheckState.Checked)
+        saveSceneLabel = QtWidgets.QLabel("Save loaded scenes", dialog)
+        saveSceneLayout.addWidget(checkSaveScenes)
+        saveSceneLayout.addWidget(saveSceneLabel)
         editName.setPlaceholderText("File name")
         nameLayout.addWidget(editName)
         mainLayout.addLayout(nameLayout)
+        mainLayout.addLayout(saveSceneLayout)
         dialogLayout.addLayout(mainLayout)
         saveButton = QtWidgets.QPushButton("Save", dialog)
         cancelButton = QtWidgets.QPushButton("Cancel", dialog)
         buttonLayout = QtWidgets.QHBoxLayout()
-        buttonLayout.addWidget(cancelButton)
         buttonLayout.addWidget(saveButton)
+        buttonLayout.addWidget(cancelButton)
         dialogLayout.addLayout(buttonLayout)
         dialog.setLayout(dialogLayout)
 
@@ -419,7 +429,11 @@ class MainWindow(QtWidgets.QMainWindow):
         ret = dialog.exec_()
         if ret == QtWidgets.QDialog.Accepted:
             str = editName.text()
-            self.__sceneManager.saveScene(self.__gameOfLife.getLogicalGridWithScenes(), str+".del")
+            if checkSaveScenes.checkState() == Qt.CheckState.Checked:
+                pattern = self.__gameOfLife.getLogicalGridWithScenes()
+            else:
+                pattern = self.__gameOfLife.getLogicalGrid()
+            self.__sceneManager.saveScene(pattern, str+".del")
             self.__loadSceneBox()
 
     __playing = False
@@ -444,7 +458,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.__flushButton.setEnabled(not enabled)
         self.__randomizeButton.setEnabled(not enabled)
         self.__saveButton.setEnabled(not enabled)
-
 
     def __startSceneUpdate(self):
         self.__editAnim = FuncAnimation(self.canvas.figure, updateScenesDisplay, fargs=(self.__img, self.__gameOfLife), interval=50)

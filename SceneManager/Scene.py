@@ -165,8 +165,8 @@ class PaintScene(AbstractScene):
         return Scene(id, self._pattern, self._name, self.__dimensions, self._x, self._y)
 
     def clickEvent(self, x, y, button):
-        y = y - int(self.__height/2)
-        x = x - int(self.__length/2)
+        y = y - (int(self.__height/2) + self._y)
+        x = x - (int(self.__length/2) + self._x)
         if button == 1:
             self._pattern[y][x] = True
         if button == 2:
