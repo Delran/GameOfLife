@@ -146,11 +146,11 @@ class LifeGameManager:
                 row.append(node)
 
         # ANNONYMOUS FUNCTION DEFINITION
-        # Lambda function that will link each not to its neighbours
+        # Lambda function that will link each node to its neighbours
         def linkLambda(i, j): self.__grid[i][j].link(
                     # Defining the array of link
                     [
-                        # Pylama complains about whitespaces, couldn't care less
+                        # Pylama complains about whitespaces, it's ugly without
                         self.__grid[(i-1) % self.__height][(j)   % self.__length],  # North
                         self.__grid[(i-1) % self.__height][(j+1) % self.__length],  # NorthEast
                         self.__grid[(i)   % self.__height][(j+1) % self.__length],  # East
@@ -211,8 +211,6 @@ class LifeGameManager:
 
     def addGliderGun(self, x=0, y=0):
         scene = self.__sceneManager.loadScene("glidergun.del")
-        # scene = self.__sceneManager.flipVertical(scene)
-        # scene = self.__sceneManager.flipHorizontal(scene)
         self.addScene(scene, x, y)
 
     def addGlider(self, x=0, y=0):

@@ -31,6 +31,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.__initGui()
 
+        self.cid = self.canvas.mpl_connect('button_press_event', self.__onPlotClick)
+        self.cid = self.canvas.mpl_connect('motion_notify_event', self.__onPlotHold)
+
     def __initGui(self):
 
         dimensions = self.__gameOfLife.getGameDimensions()
@@ -97,6 +100,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.__sceneAddButton = QtWidgets.QPushButton("Add scene", self._main)
         self.__sceneAddButton.clicked.connect(self.__addSceneCallback)
         sceneEditLayout.addWidget(self.__sceneAddButton)
+
+        # Paint scene button
+        self.__paintSceneAddButton = QtWidgets.QPushButton("Add painting scene", self._main)
+        self.__paintSceneAddButton.clicked.connect(self.__addPaintSceneCallback)
+        sceneEditLayout.addWidget(self.__paintSceneAddButton)
 
         # Loaded scene/pattern list
         self.__loadedSceneList = QtWidgets.QListWidget(self._main)
@@ -212,8 +220,17 @@ class MainWindow(QtWidgets.QMainWindow):
         confirmMessage(title, msg, self.__gameOfLife.randomize, self)
 
     def __addSceneCallback(self):
-        sceneId = self.__sceneBox.currentIndex()
         x, y = self.__getSceneXY()
+        self.__createScene(x, y)
+
+    def __addPaintSceneCallback(self):
+        dim = self.__gameOfLife.getGameDimensions()
+        self.__sceneManager.createPaintScene(dim)
+        # Set focus to the loaded list to use keyboard
+        self.__loadedSceneList.setFocus()
+
+    def __createScene(self, x, y):
+        sceneId = self.__sceneBox.currentIndex()
         self.__sceneManager.createScene(sceneId, x, y)
         # Set focus to the loaded list to use keyboard
         self.__loadedSceneList.setFocus()
@@ -294,6 +311,42 @@ class MainWindow(QtWidgets.QMainWindow):
             rightMenu.exec_(globalCoords)
 
         # else, no item clicked, do nothing
+
+    def __plotMenu(self, x, y):
+        # Really pycodestyle, REALLY ? you think THIS is a good practice ?
+        rightMenu = QtWidgets.QMenu("Choose")
+
+        fn = lambda: self.__createScene(x, y)
+        createScene = QtWidgets.QAction("Add scene here", self,
+                                        triggered=fn)
+
+        def fnDuplicate():
+            self.__sceneManager.duplicateCurrent()
+            self.__sceneManager.moveToPointCurrent(x, y)
+
+        duplicateAction = QtWidgets.QAction("Duplicate here", self,
+                                            triggered=fnDuplicate)
+
+        rightMenu.addAction(createScene)
+        rightMenu.addAction(duplicateAction)
+        rightMenu.exec_(QtGui.QCursor.pos())
+
+
+    def __onPlotClick(self, event):
+        x, y = event.xdata, event.ydata
+        if x is not None and y is not None:
+            x = int(x)
+            y = int(y)
+            if event.button == 3:
+                self.__plotMenu(x, y)
+
+    def __onPlotHold(self, event):
+        x, y = event.xdata, event.ydata
+        if x is not None and y is not None:
+            x = int(x)
+            y = int(y)
+            if self.__loadedSceneList.hasFocus():
+                self.__sceneManager.clickEventCurrent(x, y, event.button)
 
     def eventFilter(self, object, event):
         # Filter event for the loaded scene widget

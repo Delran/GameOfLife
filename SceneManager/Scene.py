@@ -1,3 +1,5 @@
+from abc import ABCMeta, abstractmethod
+
 import numpy as np
 
 from PyQt5 import QtGui
@@ -9,39 +11,38 @@ from SceneManager.PatternReader.PatternFile import PatternFile
 import Utils
 import defs
 
-# Inherit form QListWidgetItem to be used
-# as Items in directly in the GUI
-# This almost nullifies the need for a manager
-class Scene(QListWidgetItem):
 
-    def __init__(self, id, reader, x=0, y=0, pattern = None):
-        if not isinstance(reader, PatternFile):
-            raise TypeError("Instanciating scene with a patern not derived from PatternFile")
+# Abstract class for two type of scenes
+# All defined in the same file
+class AbstractScene(QListWidgetItem):
 
-        self.__reader = reader
-        if pattern is None:
-            self.__pattern = self.__reader.read()
-        else:
-            self.__pattern = pattern
-        self.__name = self.__reader.getName()
-        QListWidgetItem.__init__(self, self.__name)
+    __metaclass__ = ABCMeta
 
-        self.__id = id
+    def __init__(self, id, x, y, pattern, name):
+        self._id = id
+        self._x = x
+        self._y = y
+        self._pattern = pattern
+        self._name = name
 
-        dim = np.shape(self.__pattern)
-        self.__x = x if x >= 0 else int(dim[1]/2)
-        self.__y = y if y >= 0 else int(dim[0]/2)
+        QListWidgetItem.__init__(self, self._name)
 
     def getName(self):
-        return self.__name
-
-    def createCopy(self, id):
-        return Scene(id, self.__reader, self.__x, self.__y, self.__pattern)
+        return self._name
 
     def rename(self):
-        self.__name, ok = QInputDialog.getText(None, "Renaming " + self.__name, "Enter new name")
+        self._name, ok = QInputDialog.getText(None, "Renaming " + self._name, "Enter new name")
         if ok:
-            self.setText(self.__name)
+            self.setText(self._name)
+
+    @abstractmethod
+    def clickEvent(self, x, y, button):
+        ...
+
+    @abstractmethod
+    def createCopy(self, id):
+        ...
+
 
     def askXY(self, length, height):
         dialog = QDialog()
@@ -52,12 +53,12 @@ class Scene(QListWidgetItem):
         yLayout = QVBoxLayout()
         labelX = QLabel("Max : " + str(length-1), dialog)
         editX = QLineEdit(dialog)
-        editX.setText(str(self.__x))
+        editX.setText(str(self._x))
         editX.setPlaceholderText("X coords")
         editX.setValidator(QtGui.QIntValidator(0, length-1, dialog))
         labelY = QLabel("Max : " + str(height-1), dialog)
         editY = QLineEdit(dialog)
-        editY.setText(str(self.__y))
+        editY.setText(str(self._y))
         editY.setPlaceholderText("Y coords")
         editY.setValidator(QtGui.QIntValidator(0, height-1, dialog))
         xLayout.addWidget(labelX)
@@ -87,67 +88,115 @@ class Scene(QListWidgetItem):
         self.setXY(X, Y)
 
     def getXY(self):
-        return self.__x, self.__y
+        return self._x, self._y
 
     def setXY(self, x, y):
-        self.__x = x
-        self.__y = y
+        self._x = x
+        self._y = y
 
     def getMatrix(self):
-        return self.__pattern
+        return self._pattern
 
     def getId(self):
-        return self.__id
+        return self._id
 
     # Grids can easily be rotated and mirrored using
     # the same loop with inverted range
     # for range x: for reversed y    === 90° rotation clockwise
     # for reversed x: for range y    === 90° rotation counter clockwise
     # for reversed x: for reversed y === 180° rotation
-    def __rotateScene(self, rangeX, rangeY):
+    def _rotateScene(self, rangeX, rangeY):
         rotatedScene = []
         for x in rangeX:
             row = []
             for y in rangeY:
-                char = defs.ALIVECHAR if self.__pattern[y][x] else defs.DEADCHAR
+                char = defs.ALIVECHAR if self._pattern[y][x] else defs.DEADCHAR
                 row.append(char)
             rotatedScene.append(row)
-        self.__pattern = Utils.gridToMatrix(rotatedScene, len(rotatedScene), len(rotatedScene[0]))
+        self._pattern = Utils.gridToMatrix(rotatedScene, len(rotatedScene), len(rotatedScene[0]))
 
     def rotateSceneClockwise(self):
-        dim = np.shape(self.__pattern)
+        dim = np.shape(self._pattern)
         rangeX = range(dim[1])
         # Using reversed(range()) as argument fo Y/Height
         # seems to be caused unexpected behavior
         # Using manually inverted range that print the same
         # result doesn't appear to have this problem
         rangeY = range(dim[0]-1, -1, -1)
-        self.__rotateScene(rangeX, rangeY)
+        self._rotateScene(rangeX, rangeY)
 
     def rotateSceneCounterClockwise(self):
-        dim = np.shape(self.__pattern)
+        dim = np.shape(self._pattern)
         rangeX = reversed(range(dim[1]))
         rangeY = range(dim[0])
-        self.__rotateScene(rangeX, rangeY)
+        self._rotateScene(rangeX, rangeY)
 
-    def __flipScene(self, rangeX, rangeY):
+    def _flipScene(self, rangeX, rangeY):
         flipedScene = []
         for y in rangeY:
             row = []
             for x in rangeX:
-                char = defs.ALIVECHAR if self.__pattern[y][x] else defs.DEADCHAR
+                char = defs.ALIVECHAR if self._pattern[y][x] else defs.DEADCHAR
                 row.append(char)
             flipedScene.append(row)
-        self.__pattern = Utils.gridToMatrix(flipedScene, len(flipedScene), len(flipedScene[0]))
+        self._pattern = Utils.gridToMatrix(flipedScene, len(flipedScene), len(flipedScene[0]))
 
     def flipHorizontal(self):
-        dim = np.shape(self.__pattern)
+        dim = np.shape(self._pattern)
         rangeX = range(dim[1]-1, -1, -1)
         rangeY = range(dim[0])
-        self.__flipScene(rangeX, rangeY)
+        self._flipScene(rangeX, rangeY)
 
     def flipVertical(self):
-        dim = np.shape(self.__pattern)
+        dim = np.shape(self._pattern)
         rangeX = range(dim[1])
         rangeY = range(dim[0]-1, -1, -1)
-        self.__flipScene(rangeX, rangeY)
+        self._flipScene(rangeX, rangeY)
+
+
+class PaintScene(AbstractScene):
+    def __init__(self, id, pattern, name, dimensions, x=0, y=0):
+        self.__dimensions = dimensions
+        self.__length = dimensions[1]
+        self.__height = dimensions[0]
+        super(PaintScene, self).__init__(id, x, y, pattern, name)
+
+    def createCopy(self, id):
+        return Scene(id, self._pattern, self._name, self.__dimensions, self._x, self._y)
+
+    def clickEvent(self, x, y, button):
+        y = y - int(self.__height/2)
+        x = x - int(self.__length/2)
+        if button == 1:
+            self._pattern[y][x] = True
+        if button == 2:
+            self._pattern[y][x] = False
+
+
+# Inherit form QListWidgetItem to be used
+# as Items in directly in the GUI
+# This almost nullifies the need for a manager
+class Scene(AbstractScene):
+
+    def __init__(self, id, reader, x=0, y=0, pattern = None):
+        if not isinstance(reader, PatternFile):
+            raise TypeError("Instanciating scene with a patern not derived from PatternFile")
+
+        self.__reader = reader
+        if pattern is None:
+            pattern = self.__reader.read()
+
+        name = self.__reader.getName()
+
+        dim = np.shape(pattern)
+        x = x if x >= 0 else int(dim[1]/2)
+        y = y if y >= 0 else int(dim[0]/2)
+        super(Scene, self).__init__(id, x, y, pattern, name)
+
+    def createCopy(self, id):
+        return Scene(id, self.__reader, self._x, self._y, self._pattern)
+
+    def clickEvent(self, x, y, button):
+        if button == 1:
+            self._x = x
+            self._y = y

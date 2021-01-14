@@ -1,11 +1,13 @@
 import os.path
 from os import path
 import csv
+import numpy as np
 
 from SceneManager.PatternReader.PlainFileReader import PlainFileReader
 from SceneManager.PatternReader.RLEFileReader import RLEFileReader
 from SceneManager.PatternReader.LegacyFileReader import LegacyFileReader
 from SceneManager.Scene import Scene
+from SceneManager.Scene import PaintScene
 
 import Utils
 
@@ -78,6 +80,8 @@ class SceneManager:
 
     def flipCurrent(self, direction):
         currentScene = self.__sceneWidget.currentItem()
+        if currentScene is None:
+            return
         if direction:
             currentScene.flipHorizontal()
         else:
@@ -92,6 +96,8 @@ class SceneManager:
 
     def rotateCurrent(self, direction):
         currentScene = self.__sceneWidget.currentItem()
+        if currentScene is None:
+            return
         if direction:
             currentScene.rotateSceneCounterClockwise()
         else:
@@ -99,12 +105,20 @@ class SceneManager:
 
     def duplicateCurrent(self):
         toDup = self.__sceneWidget.currentItem()
+        if toDup is None:
+            return
         scene = toDup.createCopy(self.__sceneGUID)
         self.__sceneCreated(scene)
 
     def createScene(self, id, x, y):
         pattern = self.__patternFiles[id]
         scene = Scene(self.__sceneGUID, pattern, x, y)
+        self.__sceneCreated(scene)
+
+    def createPaintScene(self, dimensions):
+        dimensions = self.__game.getGameDimensions()
+        pattern = np.zeros((dimensions[1], dimensions[0]))
+        scene = PaintScene(self.__sceneGUID, pattern, "Painting Scene", (dimensions[1], dimensions[0]))
         self.__sceneCreated(scene)
 
     def __sceneCreated(self, scene):
@@ -118,19 +132,39 @@ class SceneManager:
         self.__loadedScenes.remove(item)
 
     def renameCurrentScene(self):
-        self.__sceneWidget.currentItem().rename()
+        scene = self.__sceneWidget.currentItem()
+        if scene is None:
+            return
+        scene.rename()
 
     def moveCurrent(self, vec2):
         scene = self.__sceneWidget.currentItem()
+        if scene is None:
+            return
         x, y = scene.getXY()
         dimensions = self.__game.getGameDimensions()
         x = (x + vec2[0]) % dimensions[0]
         y = (y + vec2[1]) % dimensions[1]
         scene.setXY(x, y)
 
+    def moveToPointCurrent(self, x, y):
+        scene = self.__sceneWidget.currentItem()
+        if scene is None:
+            return
+        scene.setXY(x, y)
+
+    def clickEventCurrent(self, x, y, button):
+        scene = self.__sceneWidget.currentItem()
+        if scene is None:
+            return
+        scene.clickEvent(x, y, button)
+
     def setXYCurrent(self):
+        scene = self.__sceneWidget.currentItem()
+        if scene is None:
+            return
         dimensions = self.__game.getGameDimensions()
-        self.__sceneWidget.currentItem().askXY(dimensions[0], dimensions[1])
+        scene.askXY(dimensions[0], dimensions[1])
 
     def clear(self):
         self.__sceneWidget.clear()

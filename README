@@ -6,10 +6,11 @@ Features :
         The Game of life can be paused and resumed at any time
 
     Scene loader/saver :
+        Add any .rle pattern in the Scenes folder to load it at startup
         Any scene can be loaded in the Game's grid at chosen coordinates.
         Scenes can be rotated by 90° clockwise and counter clockwise
         Scenes can be flipped horizontally and vertically
-
+        Scenes can be moved with mouse
         Added scene will override any cell with a different state.
 
         Game of life Patterns can be read and stored as scenes, supported format are :
@@ -39,6 +40,12 @@ How to use :
 
       If you start the game without merging the scenes, they will disappear while the game is running and
       reappear the next time you press the pause button.
+
+      You can add a Paint Scene with de designated button, when a paint scene is selected clicking on the
+      scene will paint on the scene,
+      You can use the mouse middle button to erase
+      WARNING : YOU SHOULD ONLY MOVE PAITN SCENES AFTER YOU ARE DONE, AFTER MOVING THEM THE PAIN FUCKING
+      WILL HAVE AN OFFSET THAT WILL PREVENT YOU FROM PAINTING AT THE MOUSE POSITION
 
 Limitations :
 
